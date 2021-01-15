@@ -1,10 +1,9 @@
 # Power BI Domotz Connector
-Power BI Domotz custom connector provides an easy way to fetch data from Domotz and use 
-them to create custom reports in Power BI.
+Power BI Domotz custom connector provides an easy way to fetch data from Domotz and create custom reports in Power BI.
 
 ### Usage
 Create a folder with the following path if it does not exist:
-`\User\Documents\Microsoft Power BI Desktop\Custom Connectors` and copy the file bin/debug/domotz.mez in that folder.
+`\User\Documents\Microsoft Power BI Desktop\Custom Connectors` and copy the file `bin/debug/domotz.mez` in that folder.
 Start Power BI Desktop and from `Options -> Security -> Data Extensions` 
 select `Allow any extension to load without validation or warning`
 
@@ -14,7 +13,7 @@ to a subset of (read-only) endpoints of the Domotz Public API. Keep in mind that
 transformation (expanding nested objects, data conversion) before being usable from Power BI visualization tools. 
 
 ### Build requirements
-Building the project requires Visual Studio and the Power Query SDK (https://marketplace.visualstudio.com/items?itemName=Dakahn.PowerQuerySDK).
+Building the project requires Visual Studio and the [Power Query SDK](https://marketplace.visualstudio.com/items?itemName=Dakahn.PowerQuerySDK).
 
 ### Disclaimer
 Please note that this is a beta version of the Power BI Domotz Connector which is
