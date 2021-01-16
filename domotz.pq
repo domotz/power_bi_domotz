@@ -1,16 +1,17 @@
 ﻿section domotz;
 
 [DataSource.Kind="domotz", Publish="domotz.Publish"]
-shared domotz.PublicAPI = (API_Endpoint as text) =>
+shared domotz.PublicAPI = () =>
     let
-        apiKey = Extension.CurrentCredential()[Key],
+        apiKey = Extension.CurrentCredential()[Password],
+        endpoint = Extension.CurrentCredential()[Username],
         
         headers = [
             #"X-API-KEY" = apiKey,
             #"Content-Type" = "application/json"
         ],
         swaggerDef = Json.Document(Extension.Contents("domotz-swagger.json")),
-        API_Endpoint_1 = Text.Replace(API_Endpoint, "https://", ""),
+        API_Endpoint_1 = Text.Replace(endpoint, "https://", ""),
         API_Endpoint_2 = Text.Replace(API_Endpoint_1, "/public-api/v1/", ""),
         domotzSwagger = Record.AddField(swaggerDef, "host", API_Endpoint_2),
         request = OpenApi.Document(Binary.From(Json.FromValue(domotzSwagger)), [ Headers = headers, ManualCredentials = true ]
@@ -22,7 +23,7 @@ shared domotz.PublicAPI = (API_Endpoint as text) =>
 // Data Source Kind description
 domotz = [
     Authentication = [
-        Key = []
+        UsernamePassword = [UsernameLabel="API Endpoint", PasswordLabel="API Key", Label="Domotz Public API"]
     ],
     Label = Extension.LoadString("DataSourceLabel")
 ];
