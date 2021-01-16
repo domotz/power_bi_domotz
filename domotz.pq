@@ -10,7 +10,9 @@ shared domotz.PublicAPI = (API_Endpoint as text) =>
             #"Content-Type" = "application/json"
         ],
         swaggerDef = Json.Document(Extension.Contents("domotz-swagger.json")),
-        domotzSwagger = Record.AddField(swaggerDef, "host", API_Endpoint),
+        API_Endpoint_1 = Text.Replace(API_Endpoint, "https://", ""),
+        API_Endpoint_2 = Text.Replace(API_Endpoint_1, "/public-api/v1/", ""),
+        domotzSwagger = Record.AddField(swaggerDef, "host", API_Endpoint_2),
         request = OpenApi.Document(Binary.From(Json.FromValue(domotzSwagger)), [ Headers = headers, ManualCredentials = true ]
                   )
        
