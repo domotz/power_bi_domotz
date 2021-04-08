@@ -26,7 +26,7 @@
             "name": "page_size",
             "required": false,
             "in": "query",
-            "description": "The maximum number of items to return",
+            "description": "The maximum number of items to return. Min value is 1. Max value is 100. Default value is 10",
             "format": "int32",
             "minimum": 1,
             "maximum": 100,
@@ -420,7 +420,7 @@
       "get": {
         "summary": "Retrieves the list of configured SNMP Domotz Eyes",
         "tags": [
-          "eyes"
+          "SNMP/TCP SENSORS"
         ],
         "parameters": [
           {
@@ -459,7 +459,7 @@
       "post": {
         "summary": "Creates a new SNMP Domotz Eyes",
         "tags": [
-          "eyes"
+          "SNMP/TCP SENSORS"
         ],
         "parameters": [
           {
@@ -502,7 +502,7 @@
       "get": {
         "summary": "Retrieves the list of functions for the SNMP trigger Domotz Eyes",
         "tags": [
-          "eyes"
+          "SNMP/TCP SENSORS"
         ],
         "parameters": [
           {
@@ -551,7 +551,7 @@
       "get": {
         "summary": "Returns the time series of the SNMP Domotz Eyes collected samples",
         "tags": [
-          "eyes"
+          "SNMP/TCP SENSORS"
         ],
         "parameters": [
           {
@@ -614,7 +614,7 @@
       "get": {
         "summary": "Retrieves the list of triggers for the SNMP Sensor",
         "tags": [
-          "eyes"
+          "SNMP/TCP SENSORS"
         ],
         "parameters": [
           {
@@ -663,7 +663,7 @@
       "get": {
         "summary": "Retrieves the list of configured TCP Domotz Eyes",
         "tags": [
-          "eyes"
+          "SNMP/TCP SENSORS"
         ],
         "parameters": [
           {
@@ -702,7 +702,7 @@
       "post": {
         "summary": "Creates a new TCP Domotz Eyes",
         "tags": [
-          "eyes"
+          "SNMP/TCP SENSORS"
         ],
         "parameters": [
           {
@@ -963,11 +963,77 @@
         ]
       }
     },
+    "/agent/{agent_id}/device/eye/snmp": {
+      "get": {
+        "summary": "Retrieves the list of configured SNMP Domotz Sensors on the agent",
+        "tags": [
+          "SNMP/TCP SENSORS"
+        ],
+        "parameters": [
+          {
+            "name": "agent_id",
+            "required": true,
+            "in": "path",
+            "description": "Agent ID",
+            "format": "int32",
+            "type": "integer"
+          }
+        ],
+        "operationId": "listAgentEyesSNMP",
+        "responses": {
+          "200": {
+            "description": "The list of configured SNMP Domotz Sensors on the agent",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/SNMPDomotzEye"
+              }
+            }
+          }
+        },
+        "produces": [
+          "application/json"
+        ]
+      }
+    },
+    "/agent/{agent_id}/device/eye/tcp": {
+      "get": {
+        "summary": "Retrieves the list of configured TCP Domotz Sensors on the agent",
+        "tags": [
+          "SNMP/TCP SENSORS"
+        ],
+        "parameters": [
+          {
+            "name": "agent_id",
+            "required": true,
+            "in": "path",
+            "description": "Agent ID",
+            "format": "int32",
+            "type": "integer"
+          }
+        ],
+        "operationId": "listAgentEyesTCP",
+        "responses": {
+          "200": {
+            "description": "The list of configured TCP Domotz Sensors on the agent and their latest values",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/TCPDomotzEye"
+              }
+            }
+          }
+        },
+        "produces": [
+          "application/json"
+        ]
+      }
+    },
     "/agent/{agent_id}/eye-statistics": {
       "get": {
         "summary": "Retrieves information about Domotz Eyes usage and limits",
         "tags": [
-          "eyes"
+          "SNMP/TCP SENSORS"
         ],
         "parameters": [
           {
@@ -1862,6 +1928,11 @@
           "format": "int32",
           "description": "The unique identifier of the SNMP Domotz Eye"
         },
+        "device_id": {
+          "type": "integer",
+          "format": "int32",
+          "description": "The unique identifier of the device"
+        },
         "category": {
           "type": "string",
           "enum": [
@@ -2067,6 +2138,11 @@
           "type": "integer",
           "format": "int32",
           "description": "The unique identifier of the TCP Domotz Eye"
+        },
+        "device_id": {
+          "type": "integer",
+          "format": "int32",
+          "description": "The unique identifier of the device"
         },
         "status": {
           "type": "string",
