@@ -110,6 +110,141 @@
         }
       }
     },
+    "/agent/uptime": {
+      "get": {
+        "summary": "Returns the uptime of all agents",
+        "tags": [
+          "metrics"
+        ],
+        "parameters": [
+            {
+                "name": "from",
+                "required": false,
+                "in": "query",
+                "description": "The start time of the time series. Default value is one week",
+                "type": "string"
+            },
+            {
+                "name": "to",
+                "required": false,
+                "in": "query",
+                "description": "The end time of the time series. Default value is now",
+                "type": "string"
+            }
+        ],
+        "operationId": "getAgentListUptime",
+        "responses": {
+          "200": {
+            "description": "The uptime of the agents",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/AgentUptime"
+              }
+            }
+          }
+        },
+        "produces": [
+          "application/json"
+        ]
+      }
+    },
+    "/agent/{agent_id}/uptime": {
+      "get": {
+        "summary": "Returns the uptime of the agent",
+        "tags": [
+          "metrics"
+        ],
+        "parameters": [
+            {
+                "name": "agent_id",
+                "required": true,
+                "in": "path",
+                "description": "Agent ID",
+                "type": "integer",
+                "format": "int32"
+            },
+            {
+                "name": "from",
+                "required": false,
+                "in": "query",
+                "description": "The start time of the time series. Default value is one week",
+                "type": "string"
+            },
+            {
+                "name": "to",
+                "required": false,
+                "in": "query",
+                "description": "The end time of the time series. Default value is now",
+                "type": "string"
+            }
+        ],
+        "operationId": "getAgentUptime",
+        "responses": {
+          "200": {
+            "description": "The uptime of the agent",
+            "schema": {
+              "$ref": "#/definitions/AgentUptime"
+            }
+          }
+        },
+        "produces": [
+          "application/json"
+        ]
+      }
+    },
+    "/agent/{agent_id}/device/{device_id}/uptime": {
+      "get": {
+        "summary": "Returns the uptime of the device",
+        "tags": [
+          "metrics"
+        ],
+        "parameters": [
+            {
+                "name": "agent_id",
+                "required": true,
+                "in": "path",
+                "description": "Agent ID",
+                "type": "integer",
+                "format": "int32"
+            },
+            {
+                "name": "device_id",
+                "required": true,
+                "in": "path",
+                "description": "Device ID",
+                "type": "integer",
+                "format": "int32"
+            },
+            {
+                "name": "from",
+                "required": false,
+                "in": "query",
+                "description": "The start time of the time series. Default value is one week",
+                "type": "string"
+            },
+            {
+                "name": "to",
+                "required": false,
+                "in": "query",
+                "description": "The end time of the time series. Default value is now",
+                "type": "string"
+            }
+        ],
+        "operationId": "getDeviceUptime",
+        "responses": {
+          "200": {
+            "description": "The uptime of the device",
+            "schema": {
+              "$ref": "#/definitions/DeviceUptime"
+            }
+          }
+        },
+        "produces": [
+          "application/json"
+        ]
+      }
+    },
     "/agent/{agent_id}": {
       "get": {
         "summary": "Returns the details of an agent",
@@ -1919,6 +2054,96 @@
           "description": "Indicates that software reboot on the device is possible.<br><br> The operation availability depends on the device."
         }
       }
+    },
+    "AgentUptime": {
+      "type": "object",
+      "properties": {
+        "uptime": {
+          "type": "string",
+          "description": "The uptime percentage of the agent"
+        },
+        "online_seconds": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "total_seconds": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "agent_id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "downtime_intervals": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "start": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "end": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                }
+            }
+        }
+      },
+      "required": [
+         "agent_id",
+         "online_seconds",
+         "total_seconds",
+         "uptime"
+      ]
+    },
+    "DeviceUptime": {
+      "type": "object",
+      "properties": {
+        "uptime": {
+          "type": "string",
+          "description": "The uptime percentage of the device"
+        },
+        "agent_uptime": {
+          "type": "string",
+          "description": "The uptime percentage of the agent"
+        },
+        "online_seconds": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "total_seconds": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "agent_id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "downtime_intervals": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "start": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "end": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                }
+            }
+        }
+      },
+      "required": [
+         "agent_uptime",
+         "online_seconds",
+         "total_seconds",
+         "uptime"
+      ]
     },
     "SNMPDomotzEye": {
       "type": "object",
