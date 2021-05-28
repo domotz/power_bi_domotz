@@ -22,6 +22,7 @@ shared domotz.PublicAPI = () =>
 
 // Data Source Kind description
 domotz = [
+    TestConnection = (domotz) => {"domotz.PublicAPI"},
     Authentication = [
         UsernamePassword = [UsernameLabel="API Endpoint", PasswordLabel="API Key", Label="Domotz Public API"]
     ],
