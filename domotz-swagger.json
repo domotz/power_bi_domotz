@@ -2429,7 +2429,11 @@
                 "responses": {
                     "200": {
                         "description": "An object containing the device details",
-                        "schema": {}
+                        "schema": {
+                            "items": {
+                                "$ref": "#/definitions/AbstractDevice"
+                            }
+                        }
                     }
                 },
                 "summary": "Returns the details of a device",
