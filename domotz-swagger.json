@@ -1110,10 +1110,6 @@
                     "description": "The number of sent packets of the latest collection sample",
                     "format": "int32",
                     "type": "integer"
-                },
-                "timestamp": {
-                    "description": "The timestamp of the latest update",
-                    "type": "string"
                 }
             },
             "required": [
