@@ -95,6 +95,9 @@
                 "details": {
                     "description": "DeviceDetails",
                     "properties": {
+                        "firmware_version": {
+                            "type": "string"
+                        },
                         "room": {
                             "type": "string"
                         },
@@ -135,6 +138,21 @@
                     "format": "int32",
                     "type": "integer"
                 },
+                "os": {
+                    "description": "DeviceOS",
+                    "properties": {
+                        "build": {
+                            "type": "string"
+                        },
+                        "name": {
+                            "type": "string"
+                        },
+                        "version": {
+                            "type": "string"
+                        }
+                    },
+                    "type": "object"
+                },
                 "protocol": {
                     "enum": [
                         "IP",
@@ -153,6 +171,9 @@
                         "id": {
                             "format": "int32",
                             "type": "integer"
+                        },
+                        "label": {
+                            "type": "string"
                         }
                     },
                     "type": "object"
@@ -380,6 +401,292 @@
             ],
             "type": "object"
         },
+        "AgentIPScanPolicy": {
+            "properties": {
+                "forced_ip_addresses": {
+                    "description": "The list of IP addresses always checked by the agent. By default the list is empty and the agent performs hosts discovery automatically. The addresses must be expressed in dotted decimal notation and must belong to private networks (see <a href='https://www.iana.org/assignments/iana-ipv4-special-registry/iana-ipv4-special-registry.xhtml/'>iana-ipv4-special-registry</a>)",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                }
+            },
+            "required": [
+                "forced_ip_addresses"
+            ],
+            "type": "object"
+        },
+        "AgentInterfacesPolicy": {
+            "properties": {
+                "policy": {
+                    "enum": [
+                        "allow",
+                        "deny"
+                    ],
+                    "type": "string"
+                },
+                "rules": {
+                    "description": "Rules can be expressed as lists of case-insensitive strings representing the names of the interfaces to be matched. The `*` wildcard can be used to match variable parts of the interface name. Example: `[\"eth*\", \"tun0\"]`",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                }
+            },
+            "required": [
+                "policy",
+                "rules"
+            ],
+            "type": "object"
+        },
+        "AgentLANChangeEvent": {
+            "description": "Triggered when gateway, DNS servers, DHCP servers change",
+            "properties": {
+                "data": {
+                    "properties": {
+                        "agent": {
+                            "$ref": "#/definitions/AgentBase"
+                        },
+                        "agent_id": {
+                            "description": "The `id` of the `agent`",
+                            "format": "int32",
+                            "type": "integer"
+                        },
+                        "dhcp": {
+                            "properties": {
+                                "new": {
+                                    "items": {
+                                        "type": "string"
+                                    },
+                                    "type": "array"
+                                },
+                                "old": {
+                                    "items": {
+                                        "type": "string"
+                                    },
+                                    "type": "array"
+                                }
+                            },
+                            "type": "object"
+                        },
+                        "dns": {
+                            "properties": {
+                                "new": {
+                                    "items": {
+                                        "type": "string"
+                                    },
+                                    "type": "array"
+                                },
+                                "old": {
+                                    "items": {
+                                        "type": "string"
+                                    },
+                                    "type": "array"
+                                }
+                            },
+                            "type": "object"
+                        },
+                        "gateway": {
+                            "properties": {
+                                "new": {
+                                    "type": "string"
+                                },
+                                "old": {
+                                    "type": "string"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    },
+                    "required": [
+                        "agent_id"
+                    ],
+                    "type": "object"
+                },
+                "name": {
+                    "enum": [
+                        "agent_lan_change"
+                    ],
+                    "type": "string"
+                },
+                "timestamp": {
+                    "description": "The timestamp of the event",
+                    "format": "date-time",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "name",
+                "timestamp"
+            ],
+            "type": "object"
+        },
+        "AgentSecurityIssueEvent": {
+            "description": "Triggered when Domotz detects a security issue",
+            "properties": {
+                "data": {
+                    "properties": {
+                        "agent": {
+                            "$ref": "#/definitions/AgentBase"
+                        },
+                        "agent_id": {
+                            "description": "The `id` of the `agent`",
+                            "format": "int32",
+                            "type": "integer"
+                        },
+                        "value": {
+                            "items": {
+                                "properties": {
+                                    "port": {
+                                        "format": "int32",
+                                        "type": "integer"
+                                    },
+                                    "type": {
+                                        "enum": [
+                                            "TCP_OPEN_PORT",
+                                            "UPNP_IGD_FORWARD",
+                                            "UPNP_IGD_SERVICE"
+                                        ],
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            },
+                            "type": "array"
+                        }
+                    },
+                    "type": "object"
+                },
+                "name": {
+                    "enum": [
+                        "agent_security_issue"
+                    ],
+                    "type": "string"
+                },
+                "timestamp": {
+                    "description": "The timestamp of the event",
+                    "format": "date-time",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "name",
+                "timestamp"
+            ],
+            "type": "object"
+        },
+        "AgentSpeedTestEvent": {
+            "description": "Triggered when the measured Internet speed goes below the defined threshold",
+            "properties": {
+                "data": {
+                    "properties": {
+                        "agent": {
+                            "$ref": "#/definitions/AgentBase"
+                        },
+                        "agent_id": {
+                            "description": "The `id` of the `agent`",
+                            "format": "int32",
+                            "type": "integer"
+                        },
+                        "status": {
+                            "enum": [
+                                "SPEED_TEST_ISSUE_DETECTED",
+                                "SPEED_TEST_ISSUE_RESOLVED"
+                            ],
+                            "type": "string"
+                        },
+                        "threshold": {
+                            "properties": {
+                                "download": {
+                                    "description": "The configured download threshold",
+                                    "format": "int32",
+                                    "type": "integer"
+                                },
+                                "upload": {
+                                    "description": "The configured upload threshold",
+                                    "format": "int32",
+                                    "type": "integer"
+                                }
+                            },
+                            "type": "object"
+                        },
+                        "value": {
+                            "properties": {
+                                "download": {
+                                    "description": "The measured download value",
+                                    "format": "int32",
+                                    "type": "integer"
+                                },
+                                "upload": {
+                                    "description": "The measured upload value",
+                                    "format": "int32",
+                                    "type": "integer"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    },
+                    "type": "object"
+                },
+                "name": {
+                    "enum": [
+                        "agent_speed_test"
+                    ],
+                    "type": "string"
+                },
+                "timestamp": {
+                    "description": "The timestamp of the event",
+                    "format": "date-time",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "name",
+                "timestamp"
+            ],
+            "type": "object"
+        },
+        "AgentStatusEvent": {
+            "description": "Triggered when the agent connectivity status changes",
+            "properties": {
+                "data": {
+                    "properties": {
+                        "agent": {
+                            "$ref": "#/definitions/AgentBase"
+                        },
+                        "agent_id": {
+                            "description": "The `id` of the `agent`",
+                            "format": "int32",
+                            "type": "integer"
+                        },
+                        "value": {
+                            "enum": [
+                                "UP",
+                                "DOWN"
+                            ],
+                            "type": "string"
+                        }
+                    },
+                    "type": "object"
+                },
+                "name": {
+                    "enum": [
+                        "agent_status"
+                    ],
+                    "type": "string"
+                },
+                "timestamp": {
+                    "description": "The timestamp of the event",
+                    "format": "date-time",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "name",
+                "timestamp"
+            ],
+            "type": "object"
+        },
         "AgentUptime": {
             "properties": {
                 "agent_id": {
@@ -416,9 +723,187 @@
                 }
             },
             "required": [
+                "agent_id",
                 "online_seconds",
                 "total_seconds",
                 "uptime"
+            ],
+            "type": "object"
+        },
+        "AgentVPNActiveConnection": {
+            "properties": {
+                "bytes": {
+                    "description": "Current VPN connection consumption (bytes) ",
+                    "format": "int32",
+                    "type": "integer"
+                },
+                "creation_time": {
+                    "format": "date-time",
+                    "type": "string"
+                },
+                "expiration_time": {
+                    "format": "date-time",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "The ID of the VPN connection",
+                    "format": "int32",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "The user that started the VPN connection",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "The status of the vpn connection",
+                    "enum": [
+                        "ACTIVE",
+                        "INACTIVE",
+                        "EXPIRED"
+                    ],
+                    "type": "string"
+                }
+            },
+            "required": [
+                "bytes",
+                "creation_time",
+                "expiration_time",
+                "id",
+                "name",
+                "status"
+            ],
+            "type": "object"
+        },
+        "AgentVPNConnection": {
+            "properties": {
+                "allowed_ip": {
+                    "description": "The only public IP address allowed to access the connection.\n        It will be impossible to use the connection from other IP addresses. You should use your public IP address. \n",
+                    "pattern": "^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$",
+                    "type": "string"
+                },
+                "routing_policy": {
+                    "description": "The traffic routing policy for the VPN connection: \n</br>- *global*: All the traffic is routed through the VPN On Demand. More consumption on the Domotz Cloud\n</br>- *local*: Only LAN traffic passes through the VPN On Demand. Less consumption on the Domotz Cloud\n",
+                    "enum": [
+                        "global",
+                        "local"
+                    ],
+                    "type": "string"
+                },
+                "ttl_hours": {
+                    "default": 1,
+                    "description": "The duration in hours of the connection.",
+                    "format": "int32",
+                    "maximum": 24,
+                    "minimum": 1,
+                    "type": "integer"
+                }
+            },
+            "required": [
+                "allowed_ip",
+                "routing_policy"
+            ],
+            "type": "object"
+        },
+        "AgentWANChangeEvent": {
+            "description": "Triggered when ISP or Public IP address changes",
+            "properties": {
+                "data": {
+                    "properties": {
+                        "agent": {
+                            "$ref": "#/definitions/AgentBase"
+                        },
+                        "agent_id": {
+                            "description": "The `id` of the `agent`",
+                            "format": "int32",
+                            "type": "integer"
+                        },
+                        "ip": {
+                            "properties": {
+                                "new": {
+                                    "properties": {
+                                        "address": {
+                                            "type": "string"
+                                        },
+                                        "name": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                },
+                                "old": {
+                                    "properties": {
+                                        "address": {
+                                            "type": "string"
+                                        },
+                                        "name": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            },
+                            "type": "object"
+                        },
+                        "provider": {
+                            "properties": {
+                                "new": {
+                                    "properties": {
+                                        "country": {
+                                            "type": "string"
+                                        },
+                                        "descr": {
+                                            "type": "string"
+                                        },
+                                        "inetnum": {
+                                            "type": "string"
+                                        },
+                                        "netname": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                },
+                                "old": {
+                                    "properties": {
+                                        "country": {
+                                            "type": "string"
+                                        },
+                                        "descr": {
+                                            "type": "string"
+                                        },
+                                        "inetnum": {
+                                            "type": "string"
+                                        },
+                                        "netname": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    },
+                    "required": [
+                        "agent_id"
+                    ],
+                    "type": "object"
+                },
+                "name": {
+                    "enum": [
+                        "agent_wan_change"
+                    ],
+                    "type": "string"
+                },
+                "timestamp": {
+                    "description": "The timestamp of the event",
+                    "format": "date-time",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "name",
+                "timestamp"
             ],
             "type": "object"
         },
@@ -432,7 +917,8 @@
                     "description": "The list of events associated to the profile",
                     "items": {
                         "enum": [
-                            "device_status",
+                            "device_status_up",
+                            "device_status_down",
                             "device_heartbeat_lost",
                             "device_ip_change",
                             "device_snmp",
@@ -440,10 +926,14 @@
                             "device_rtd",
                             "device_configuration_change",
                             "device_configuration_misalignment",
-                            "agent_status",
+                            "agent_feature_discovery",
+                            "agent_status_up",
+                            "agent_status_down",
                             "agent_speed_test",
                             "agent_device_discovery",
-                            "agent_security_issue"
+                            "agent_security_issue",
+                            "agent_wan_change",
+                            "agent_lan_change"
                         ],
                         "type": "string"
                     },
@@ -503,6 +993,60 @@
             ],
             "type": "object"
         },
+        "AllAgentInterfaces": {
+            "properties": {
+                "attached": {
+                    "items": {
+                        "properties": {
+                            "address": {
+                                "type": "string"
+                            },
+                            "mac_address": {
+                                "type": "string"
+                            },
+                            "name": {
+                                "type": "string"
+                            },
+                            "netmask": {
+                                "format": "int32",
+                                "type": "integer"
+                            }
+                        },
+                        "required": [
+                            "name"
+                        ],
+                        "type": "object"
+                    },
+                    "type": "array"
+                },
+                "routed": {
+                    "items": {
+                        "properties": {
+                            "address": {
+                                "type": "string"
+                            },
+                            "name": {
+                                "type": "string"
+                            },
+                            "netmask": {
+                                "format": "int32",
+                                "type": "integer"
+                            }
+                        },
+                        "required": [
+                            "name"
+                        ],
+                        "type": "object"
+                    },
+                    "type": "array"
+                }
+            },
+            "required": [
+                "attached",
+                "routed"
+            ],
+            "type": "object"
+        },
         "Area": {
             "description": "Represents an area of the Company",
             "properties": {
@@ -541,6 +1085,53 @@
             ],
             "type": "object"
         },
+        "ConnectionSession": {
+            "properties": {
+                "allowed_ip": {
+                    "description": "The only public IP address allowed to access the connection.\n        It will be impossible to use the connection from other IP addresses. You should use your public IP address. \n",
+                    "pattern": "^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$",
+                    "type": "string"
+                },
+                "expiration": {
+                    "description": "The time after which the connection will be closed",
+                    "format": "date-time",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "The unique identifier of the `connection`",
+                    "format": "int32",
+                    "type": "integer"
+                },
+                "link": {
+                    "description": "Either the link to access the device's HTTP(s) interface in the browser or the host/port coordinates of the proxied TCP port, depending on the protocol (see protocol description in the request)",
+                    "type": "string"
+                },
+                "port": {
+                    "format": "int32",
+                    "maximum": 65535,
+                    "minimum": 0,
+                    "type": "integer"
+                },
+                "protocol": {
+                    "description": "The protocol wrapped by the connection:\n\n</br>- *http/https*: the `link` field in the reply will contain an `https` URL. A browser or a similar user agent must be used:\nthe client must have cookies enabled and the capability of following 302 redirects. If the protocol is `https` the\ndevice's certificate will be accepted without checks and its information ignored (our server will act as a proxy).\n</br>- *tcp*: the `link` field will be in the form `tcp://{host}:{port}`. Any connection established (e.g. with `telnet`\n or `ssh`) on these coordinates will be securely forwarded to the requested `port` of the device.\n </br>- *ssh*: the `link` field will  contain an `https` URL. A browser or a similar user agent must be used:\nthe client must have cookies enabled and the capability of following 302 redirects.\n</br>- *rdp*: the `link` field will  contain an `https` URL. A browser or a similar user agent must be used:\nthe client must have cookies enabled and the capability of following 302 redirects.\n ",
+                    "enum": [
+                        "http",
+                        "https",
+                        "tcp",
+                        "ssh",
+                        "rdp"
+                    ],
+                    "type": "string"
+                }
+            },
+            "required": [
+                "allowed_ip",
+                "id",
+                "port",
+                "protocol"
+            ],
+            "type": "object"
+        },
         "DetectedDeviceType": {
             "description": "A device type, detected by the Domotz device identification feature",
             "properties": {
@@ -572,6 +1163,50 @@
             },
             "type": "object"
         },
+        "DeviceApplicationField": {
+            "description": "The list of applications of a device",
+            "properties": {
+                "application_id": {
+                    "type": "string"
+                },
+                "first_time_seen": {
+                    "format": "date-time",
+                    "type": "string"
+                },
+                "info": {
+                    "type": "string"
+                },
+                "install_date": {
+                    "format": "date-time",
+                    "type": "string"
+                },
+                "install_location": {
+                    "type": "string"
+                },
+                "last_modified": {
+                    "format": "date-time",
+                    "type": "string"
+                },
+                "last_update": {
+                    "format": "date-time",
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "publisher": {
+                    "type": "string"
+                },
+                "version": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "application_id",
+                "first_time_seen"
+            ],
+            "type": "object"
+        },
         "DeviceBaseType": {
             "description": "A device type, either set by the user or as identified by the Domotz system",
             "properties": {
@@ -595,8 +1230,200 @@
             },
             "type": "object"
         },
+        "DeviceConfigurationChangeEvent": {
+            "description": "Triggered when the device configuration changes",
+            "properties": {
+                "data": {
+                    "properties": {
+                        "agent": {
+                            "$ref": "#/definitions/AgentBase"
+                        },
+                        "agent_id": {
+                            "description": "The `id` of the `agent`",
+                            "format": "int32",
+                            "type": "integer"
+                        },
+                        "device": {
+                            "$ref": "#/definitions/AbstractDevice"
+                        },
+                        "device_id": {
+                            "description": "The `id` of the `device`",
+                            "format": "int32",
+                            "type": "integer"
+                        }
+                    },
+                    "required": [
+                        "device_id"
+                    ],
+                    "type": "object"
+                },
+                "name": {
+                    "enum": [
+                        "device_configuration_change"
+                    ],
+                    "type": "string"
+                },
+                "timestamp": {
+                    "description": "The timestamp of the event",
+                    "format": "date-time",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "name",
+                "timestamp"
+            ],
+            "type": "object"
+        },
+        "DeviceConfigurationMisalignmentEvent": {
+            "description": "Triggered when the device configuration becomes different from the startup one",
+            "properties": {
+                "data": {
+                    "properties": {
+                        "agent": {
+                            "$ref": "#/definitions/AgentBase"
+                        },
+                        "agent_id": {
+                            "description": "The `id` of the `agent`",
+                            "format": "int32",
+                            "type": "integer"
+                        },
+                        "device": {
+                            "$ref": "#/definitions/AbstractDevice"
+                        },
+                        "device_id": {
+                            "description": "The `id` of the `device`",
+                            "format": "int32",
+                            "type": "integer"
+                        }
+                    },
+                    "required": [
+                        "device_id"
+                    ],
+                    "type": "object"
+                },
+                "name": {
+                    "enum": [
+                        "device_configuration_misalignment"
+                    ],
+                    "type": "string"
+                },
+                "timestamp": {
+                    "description": "The timestamp of the event",
+                    "format": "date-time",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "name",
+                "timestamp"
+            ],
+            "type": "object"
+        },
+        "DeviceConnection": {
+            "properties": {
+                "allowed_ip": {
+                    "description": "The only public IP address allowed to access the connection.\n        It will be impossible to use the connection from other IP addresses. You should use your public IP address. \n",
+                    "pattern": "^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$",
+                    "type": "string"
+                },
+                "port": {
+                    "format": "int32",
+                    "maximum": 65535,
+                    "minimum": 0,
+                    "type": "integer"
+                },
+                "protocol": {
+                    "description": "The protocol wrapped by the connection:\n\n</br>- *http/https*: the `link` field in the reply will contain an `https` URL. A browser or a similar user agent must be used:\nthe client must have cookies enabled and the capability of following 302 redirects. If the protocol is `https` the\ndevice's certificate will be accepted without checks and its information ignored (our server will act as a proxy).\n</br>- *tcp*: the `link` field will be in the form `tcp://{host}:{port}`. Any connection established (e.g. with `telnet`\n or `ssh`) on these coordinates will be securely forwarded to the requested `port` of the device.\n </br>- *ssh*: the `link` field will  contain an `https` URL. A browser or a similar user agent must be used:\nthe client must have cookies enabled and the capability of following 302 redirects.\n</br>- *rdp*: the `link` field will  contain an `https` URL. A browser or a similar user agent must be used:\nthe client must have cookies enabled and the capability of following 302 redirects.\n ",
+                    "enum": [
+                        "http",
+                        "https",
+                        "tcp",
+                        "ssh",
+                        "rdp"
+                    ],
+                    "type": "string"
+                },
+                "ttl_hours": {
+                    "default": 1,
+                    "description": "The duration in hours of the connection.",
+                    "format": "int32",
+                    "maximum": 24,
+                    "minimum": 1,
+                    "type": "integer"
+                }
+            },
+            "required": [
+                "allowed_ip",
+                "port",
+                "protocol"
+            ],
+            "type": "object"
+        },
+        "DeviceCredentials": {
+            "properties": {
+                "password": {
+                    "description": "password",
+                    "type": "string"
+                },
+                "username": {
+                    "description": "username",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "password",
+                "username"
+            ],
+            "type": "object"
+        },
+        "DeviceDiscoveryEvent": {
+            "description": "Triggered when a new device appears on the network",
+            "properties": {
+                "data": {
+                    "properties": {
+                        "agent": {
+                            "$ref": "#/definitions/AgentBase"
+                        },
+                        "agent_id": {
+                            "description": "The `id` of the `agent`",
+                            "format": "int32",
+                            "type": "integer"
+                        },
+                        "device": {
+                            "$ref": "#/definitions/AbstractDevice"
+                        },
+                        "device_id": {
+                            "description": "The `id` of the `device`",
+                            "format": "int32",
+                            "type": "integer"
+                        }
+                    },
+                    "type": "object"
+                },
+                "name": {
+                    "enum": [
+                        "agent_device_discovery"
+                    ],
+                    "type": "string"
+                },
+                "timestamp": {
+                    "description": "The timestamp of the event",
+                    "format": "date-time",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "name",
+                "timestamp"
+            ],
+            "type": "object"
+        },
         "DeviceEyeSNMPHistorySample": {
             "properties": {
+                "enum_value": {
+                    "type": "string"
+                },
                 "timestamp": {
                     "description": "The time the sample was reported to Domotz",
                     "format": "date-time",
@@ -609,6 +1436,51 @@
             "required": [
                 "timestamp",
                 "value"
+            ],
+            "type": "object"
+        },
+        "DeviceHeartbeatLostEvent": {
+            "description": "Triggered when a device does not respond to a ping",
+            "properties": {
+                "data": {
+                    "properties": {
+                        "agent": {
+                            "$ref": "#/definitions/AgentBase"
+                        },
+                        "agent_id": {
+                            "description": "The `id` of the `agent`",
+                            "format": "int32",
+                            "type": "integer"
+                        },
+                        "device": {
+                            "$ref": "#/definitions/AbstractDevice"
+                        },
+                        "device_id": {
+                            "description": "The `id` of the `device`",
+                            "format": "int32",
+                            "type": "integer"
+                        }
+                    },
+                    "required": [
+                        "device_id"
+                    ],
+                    "type": "object"
+                },
+                "name": {
+                    "enum": [
+                        "device_heartbeat_lost"
+                    ],
+                    "type": "string"
+                },
+                "timestamp": {
+                    "description": "The timestamp of the event",
+                    "format": "date-time",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "name",
+                "timestamp"
             ],
             "type": "object"
         },
@@ -652,6 +1524,90 @@
             "required": [
                 "timestamp",
                 "type"
+            ],
+            "type": "object"
+        },
+        "DeviceIPChangeEvent": {
+            "description": "Triggered when the device IP address changes",
+            "properties": {
+                "data": {
+                    "properties": {
+                        "agent": {
+                            "$ref": "#/definitions/AgentBase"
+                        },
+                        "agent_id": {
+                            "description": "The `id` of the `agent`",
+                            "format": "int32",
+                            "type": "integer"
+                        },
+                        "device": {
+                            "$ref": "#/definitions/AbstractDevice"
+                        },
+                        "device_id": {
+                            "description": "The `id` of the `device`",
+                            "format": "int32",
+                            "type": "integer"
+                        },
+                        "old_ip_addresses": {
+                            "description": "The list of previous IP addresses",
+                            "items": {
+                                "type": "string"
+                            },
+                            "type": "array"
+                        },
+                        "value": {
+                            "description": "The list of new IP addresses",
+                            "items": {
+                                "type": "string"
+                            },
+                            "type": "array"
+                        }
+                    },
+                    "required": [
+                        "device_id"
+                    ],
+                    "type": "object"
+                },
+                "name": {
+                    "enum": [
+                        "device_ip_change"
+                    ],
+                    "type": "string"
+                },
+                "timestamp": {
+                    "description": "The timestamp of the event",
+                    "format": "date-time",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "name",
+                "timestamp"
+            ],
+            "type": "object"
+        },
+        "DeviceInventoryField": {
+            "description": "A device inventory field",
+            "properties": {
+                "creation_time": {
+                    "format": "date-time",
+                    "type": "string"
+                },
+                "key": {
+                    "description": "The name of the field, unique in the Inventory",
+                    "maxLength": 25,
+                    "minLength": 1,
+                    "pattern": "/^[a-z][a-z0-9_-]{0,24}]$/",
+                    "type": "string"
+                },
+                "value": {
+                    "maxLength": 255,
+                    "type": "string"
+                }
+            },
+            "required": [
+                "key",
+                "value"
             ],
             "type": "object"
         },
@@ -709,6 +1665,88 @@
             ],
             "type": "object"
         },
+        "DeviceRTDIssueEvent": {
+            "description": "Triggered when the Round-Trip-Delay values of a device exceeds the defined thresholds",
+            "properties": {
+                "data": {
+                    "properties": {
+                        "agent": {
+                            "$ref": "#/definitions/AgentBase"
+                        },
+                        "agent_id": {
+                            "description": "The `id` of the `agent`",
+                            "format": "int32",
+                            "type": "integer"
+                        },
+                        "device": {
+                            "$ref": "#/definitions/AbstractDevice"
+                        },
+                        "device_id": {
+                            "description": "The `id` of the `device`",
+                            "format": "int32",
+                            "type": "integer"
+                        },
+                        "status": {
+                            "enum": [
+                                "RTD_ISSUE_DETECTED",
+                                "RTD_ISSUE_RESOLVED"
+                            ],
+                            "type": "string"
+                        },
+                        "threshold": {
+                            "properties": {
+                                "latency": {
+                                    "description": "The configured latency threshold",
+                                    "format": "int32",
+                                    "type": "integer"
+                                },
+                                "packet_loss_percentage": {
+                                    "description": "The configured packet loss percentage threshold",
+                                    "format": "int32",
+                                    "type": "integer"
+                                }
+                            },
+                            "type": "object"
+                        },
+                        "value": {
+                            "properties": {
+                                "latency": {
+                                    "description": "The current latency value",
+                                    "format": "int32",
+                                    "type": "integer"
+                                },
+                                "packet_loss_percentage": {
+                                    "description": "The current packet loss percentage  value",
+                                    "format": "int32",
+                                    "type": "integer"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    },
+                    "required": [
+                        "device_id"
+                    ],
+                    "type": "object"
+                },
+                "name": {
+                    "enum": [
+                        "device_rtd"
+                    ],
+                    "type": "string"
+                },
+                "timestamp": {
+                    "description": "The timestamp of the event",
+                    "format": "date-time",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "name",
+                "timestamp"
+            ],
+            "type": "object"
+        },
         "DeviceRTDStatistics": {
             "properties": {
                 "avg_max": {
@@ -754,12 +1792,196 @@
             ],
             "type": "object"
         },
+        "DeviceSNMPEvent": {
+            "description": "Triggered when the status of an SNMP value changes",
+            "properties": {
+                "data": {
+                    "properties": {
+                        "agent": {
+                            "$ref": "#/definitions/AgentBase"
+                        },
+                        "agent_id": {
+                            "description": "The `id` of the `agent`",
+                            "format": "int32",
+                            "type": "integer"
+                        },
+                        "device": {
+                            "$ref": "#/definitions/AbstractDevice"
+                        },
+                        "device_id": {
+                            "description": "The `id` of the `device`",
+                            "format": "int32",
+                            "type": "integer"
+                        },
+                        "enum_value": {
+                            "description": "The current enum value of the SNMP sensor if the OID is of type enum",
+                            "type": "string"
+                        },
+                        "trigger_name": {
+                            "type": "string"
+                        },
+                        "value": {
+                            "description": "The current value of the SNMP sensor",
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "device_id"
+                    ],
+                    "type": "object"
+                },
+                "name": {
+                    "enum": [
+                        "device_snmp"
+                    ],
+                    "type": "string"
+                },
+                "timestamp": {
+                    "description": "The timestamp of the event",
+                    "format": "date-time",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "name",
+                "timestamp"
+            ],
+            "type": "object"
+        },
+        "DeviceSnmpCommunity": {
+            "properties": {
+                "read": {
+                    "description": "Defines new read snmp community",
+                    "type": "string"
+                },
+                "write": {
+                    "description": "Defines new write snmp community (defaults to read community if not used)",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "read"
+            ],
+            "type": "object"
+        },
+        "DeviceStatusChangeEvent": {
+            "description": "Triggered when the status of a device changes",
+            "properties": {
+                "data": {
+                    "properties": {
+                        "agent": {
+                            "$ref": "#/definitions/AgentBase"
+                        },
+                        "agent_id": {
+                            "description": "The `id` of the `agent`",
+                            "format": "int32",
+                            "type": "integer"
+                        },
+                        "device": {
+                            "$ref": "#/definitions/AbstractDevice"
+                        },
+                        "device_id": {
+                            "description": "The `id` of the `device`",
+                            "format": "int32",
+                            "type": "integer"
+                        },
+                        "value": {
+                            "enum": [
+                                "UP",
+                                "DOWN"
+                            ],
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "device_id"
+                    ],
+                    "type": "object"
+                },
+                "name": {
+                    "enum": [
+                        "device_status"
+                    ],
+                    "type": "string"
+                },
+                "timestamp": {
+                    "description": "The timestamp of the event",
+                    "format": "date-time",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "name",
+                "timestamp"
+            ],
+            "type": "object"
+        },
+        "DeviceTCPEvent": {
+            "description": "Triggered when the status of a monitored TCP service changes",
+            "properties": {
+                "data": {
+                    "properties": {
+                        "agent": {
+                            "$ref": "#/definitions/AgentBase"
+                        },
+                        "agent_id": {
+                            "description": "The `id` of the `agent`",
+                            "format": "int32",
+                            "type": "integer"
+                        },
+                        "device": {
+                            "$ref": "#/definitions/AbstractDevice"
+                        },
+                        "device_id": {
+                            "description": "The `id` of the `device`",
+                            "format": "int32",
+                            "type": "integer"
+                        },
+                        "value": {
+                            "items": {
+                                "properties": {
+                                    "port": {
+                                        "format": "int32",
+                                        "type": "integer"
+                                    },
+                                    "status": {
+                                        "enum": [
+                                            "UP",
+                                            "DOWN"
+                                        ],
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            },
+                            "type": "array"
+                        }
+                    },
+                    "required": [
+                        "device_id"
+                    ],
+                    "type": "object"
+                },
+                "name": {
+                    "enum": [
+                        "device_tcp"
+                    ],
+                    "type": "string"
+                },
+                "timestamp": {
+                    "description": "The timestamp of the event",
+                    "format": "date-time",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "name",
+                "timestamp"
+            ],
+            "type": "object"
+        },
         "DeviceUptime": {
             "properties": {
-                "agent_id": {
-                    "format": "int32",
-                    "type": "integer"
-                },
                 "agent_uptime": {
                     "description": "The uptime percentage of the agent",
                     "type": "string"
@@ -801,28 +2023,74 @@
             ],
             "type": "object"
         },
+        "DeviceVariable": {
+            "description": "The representation of a device variable",
+            "properties": {
+                "creation_time": {
+                    "description": "The creation time of the variable",
+                    "format": "date-time",
+                    "type": "string"
+                },
+                "has_history": {
+                    "description": "If true the history of the variable can be retrieved with <a href='#getvariablehistory'> getVariableHistory</a>",
+                    "type": "boolean"
+                },
+                "id": {
+                    "description": "The ID of the variable",
+                    "format": "int32",
+                    "type": "integer"
+                },
+                "label": {
+                    "description": "The label",
+                    "type": "string"
+                },
+                "path": {
+                    "description": "The variable path",
+                    "type": "string"
+                },
+                "unit": {
+                    "description": "The unit of measurement",
+                    "type": "string"
+                },
+                "value": {
+                    "description": "The variable value",
+                    "type": "string"
+                },
+                "value_update_time": {
+                    "description": "The update time of the variable value",
+                    "format": "date-time",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "has_history",
+                "id",
+                "path"
+            ],
+            "type": "object"
+        },
         "DomotzEyesUsageInformation": {
-            "description": "Information about Domotz Eyes current usage and limits",
+            "description": "Information about Domotz Sensors current usage and limits",
             "properties": {
                 "limit": {
-                    "description": "Number of allowed Domotz Eyes for the agent",
+                    "description": "Number of allowed Domotz Sensors for the agent",
                     "format": "int32",
                     "type": "integer"
                 },
                 "usage": {
                     "properties": {
                         "snmp": {
-                            "description": "Number of configured Domotz Eyes of type `snmp` on the agent.",
+                            "description": "Number of configured Domotz Sensors of type `snmp` on the agent.",
                             "format": "int32",
                             "type": "integer"
                         },
                         "tcp": {
-                            "description": "Number of configured Domotz Eyes of type `tcp` on the agent.",
+                            "description": "Number of configured Domotz Sensors of type `tcp` on the agent.",
                             "format": "int32",
                             "type": "integer"
                         },
                         "total": {
-                            "description": "Number of configured Domotz Eyes on the agent.",
+                            "description": "Number of configured Domotz Sensors on the agent.",
                             "format": "int32",
                             "type": "integer"
                         }
@@ -868,6 +2136,96 @@
                 }
             ]
         },
+        "FeatureDiscoveryEvent": {
+            "description": "Triggered when a new feature is discovered on a device",
+            "properties": {
+                "data": {
+                    "properties": {
+                        "agent": {
+                            "$ref": "#/definitions/AgentBase"
+                        },
+                        "agent_id": {
+                            "description": "The `id` of the `agent`",
+                            "format": "int32",
+                            "type": "integer"
+                        },
+                        "device": {
+                            "$ref": "#/definitions/AbstractDevice"
+                        },
+                        "device_id": {
+                            "description": "The `id` of the `device`",
+                            "format": "int32",
+                            "type": "integer"
+                        },
+                        "feature": {
+                            "description": "The discovered feature",
+                            "enum": [
+                                "mib_discovery"
+                            ],
+                            "type": "string"
+                        },
+                        "value": {
+                            "properties": {
+                                "data": {
+                                    "additionalProperties": true,
+                                    "type": "object"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    },
+                    "type": "object"
+                },
+                "name": {
+                    "enum": [
+                        "agent_feature_discovery"
+                    ],
+                    "type": "string"
+                },
+                "timestamp": {
+                    "description": "The timestamp of the event",
+                    "format": "date-time",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "name",
+                "timestamp"
+            ],
+            "type": "object"
+        },
+        "InventoryField": {
+            "allOf": [
+                {
+                    "$ref": "#/definitions/WriteInventoryField"
+                },
+                {
+                    "description": "DTO Returned by the API describing an Inventory Field",
+                    "properties": {
+                        "creation_time": {
+                            "format": "date-time",
+                            "type": "string"
+                        },
+                        "defined_by_user": {
+                            "description": "The `id` of the user that defined the inventory field - if different from your id, this field can't be deleted or changed",
+                            "format": "int32",
+                            "type": "integer"
+                        },
+                        "key": {
+                            "description": "The name of the field, unique in the Inventory",
+                            "maxLength": 25,
+                            "minLength": 1,
+                            "pattern": "/^[a-z][a-z0-9_-]{0,24}]$/",
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "key"
+                    ],
+                    "type": "object"
+                }
+            ]
+        },
         "IpDevice": {
             "allOf": [
                 {
@@ -899,6 +2257,26 @@
                         "model": {
                             "maxLength": 255,
                             "type": "string"
+                        },
+                        "open_ports": {
+                            "description": "The list of TCP and UDP open ports. Domotz scans a subset of all the ports, visit the <a href='https://help.domotz.com/user-guide/device-tcp-udp-ports-services-discovery/'>user guide</a> for more details.",
+                            "properties": {
+                                "tcp": {
+                                    "items": {
+                                        "format": "int32",
+                                        "type": "integer"
+                                    },
+                                    "type": "array"
+                                },
+                                "udp": {
+                                    "items": {
+                                        "format": "int32",
+                                        "type": "integer"
+                                    },
+                                    "type": "array"
+                                }
+                            },
+                            "type": "object"
                         },
                         "status": {
                             "enum": [
@@ -948,11 +2326,58 @@
                                 "inspection": {
                                     "type": "string"
                                 },
+                                "netbios": {
+                                    "type": "string"
+                                },
                                 "snmp": {
                                     "type": "string"
                                 },
                                 "upnp": {
                                     "type": "string"
+                                },
+                                "zeroconf": {
+                                    "type": "string"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    },
+                    "type": "object"
+                }
+            ]
+        },
+        "MibDiscoveryEvent": {
+            "allOf": [
+                {
+                    "$ref": "#/definitions/FeatureDiscoveryEvent"
+                },
+                {
+                    "description": "Triggered when a new feature MIB is discovered on a device",
+                    "properties": {
+                        "data": {
+                            "properties": {
+                                "agent": {
+                                    "$ref": "#/definitions/AgentBase"
+                                },
+                                "device": {
+                                    "$ref": "#/definitions/AbstractDevice"
+                                },
+                                "value": {
+                                    "properties": {
+                                        "data": {
+                                            "properties": {
+                                                "mib": {
+                                                    "description": "The discovered MIB",
+                                                    "items": {
+                                                        "type": "string"
+                                                    },
+                                                    "type": "array"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
                                 }
                             },
                             "type": "object"
@@ -979,6 +2404,88 @@
                     "type": "array"
                 }
             },
+            "type": "object"
+        },
+        "NetworkTopology": {
+            "properties": {
+                "edges": {
+                    "description": "The list of edges. Each item contains the IDs of the connected devices.",
+                    "items": {
+                        "properties": {
+                            "from": {
+                                "format": "int32",
+                                "type": "integer"
+                            },
+                            "to": {
+                                "format": "int32",
+                                "type": "integer"
+                            }
+                        },
+                        "required": [
+                            "from",
+                            "to"
+                        ],
+                        "type": "object"
+                    },
+                    "type": "array"
+                }
+            },
+            "required": [
+                "edges"
+            ],
+            "type": "object"
+        },
+        "SNMPDomotzAgentEye": {
+            "description": "Information about a configured SNMP Domotz Sensor",
+            "properties": {
+                "category": {
+                    "description": "The category of the OID",
+                    "enum": [
+                        "OTHER",
+                        "CONSUMABLE",
+                        "CPU",
+                        "DISK_SPACE",
+                        "MEMORY",
+                        "NETWORK_TRAFFIC",
+                        "TEMPERATURE"
+                    ],
+                    "type": "string"
+                },
+                "device_id": {
+                    "description": "The unique identifier of the device",
+                    "format": "int32",
+                    "type": "integer"
+                },
+                "id": {
+                    "description": "The ID of the SNMP Domotz Sensor",
+                    "format": "int32",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "The name of the Domotz Sensors",
+                    "type": "string"
+                },
+                "oid": {
+                    "description": "The OID string",
+                    "type": "string"
+                },
+                "value_type": {
+                    "description": "The type of the OID",
+                    "enum": [
+                        "STRING",
+                        "NUMERIC",
+                        "ENUM"
+                    ],
+                    "type": "string"
+                }
+            },
+            "required": [
+                "category",
+                "id",
+                "name",
+                "oid",
+                "value_type"
+            ],
             "type": "object"
         },
         "SNMPDomotzAuthentication": {
@@ -1033,7 +2540,7 @@
             "type": "object"
         },
         "SNMPDomotzEye": {
-            "description": "Information about a configured SNMP Domotz Eye",
+            "description": "Information about a configured SNMP Domotz Sensor",
             "properties": {
                 "category": {
                     "description": "The category of the OID",
@@ -1054,7 +2561,7 @@
                     "type": "integer"
                 },
                 "id": {
-                    "description": "The unique identifier of the SNMP Domotz Eye",
+                    "description": "The ID of the SNMP Domotz Sensor",
                     "format": "int32",
                     "type": "integer"
                 },
@@ -1063,12 +2570,16 @@
                     "format": "date-time",
                     "type": "string"
                 },
+                "latest_enum_value": {
+                    "description": "The enum value retrieved on the OID",
+                    "type": "string"
+                },
                 "latest_value": {
                     "description": "The value retrieved on the OID",
                     "type": "string"
                 },
                 "name": {
-                    "description": "The name of the Domotz Eyes",
+                    "description": "The name of the Domotz Sensors",
                     "type": "string"
                 },
                 "oid": {
@@ -1079,7 +2590,8 @@
                     "description": "The type of the OID",
                     "enum": [
                         "STRING",
-                        "NUMERIC"
+                        "NUMERIC",
+                        "ENUM"
                     ],
                     "type": "string"
                 }
@@ -1096,7 +2608,7 @@
             "type": "object"
         },
         "SNMPDomotzEyeCreation": {
-            "description": "SNMP Domotz Eye Data",
+            "description": "SNMP Domotz Sensor Data",
             "properties": {
                 "category": {
                     "description": "The category of the OID",
@@ -1112,7 +2624,7 @@
                     "type": "string"
                 },
                 "name": {
-                    "description": "The name of the Domotz Eyes",
+                    "description": "The name of the Domotz Sensors",
                     "type": "string"
                 },
                 "oid": {
@@ -1123,7 +2635,8 @@
                     "description": "The type of the OID",
                     "enum": [
                         "STRING",
-                        "NUMERIC"
+                        "NUMERIC",
+                        "ENUM"
                     ],
                     "type": "string"
                 }
@@ -1208,7 +2721,8 @@
                     "description": "The type of the operands",
                     "enum": [
                         "STRING",
-                        "NUMERIC"
+                        "NUMERIC",
+                        "ENUM"
                     ],
                     "type": "string"
                 }
@@ -1218,6 +2732,38 @@
                 "id",
                 "name",
                 "value_types"
+            ],
+            "type": "object"
+        },
+        "SNMPDomotzSnmpTriggerAlertCreation": {
+            "description": "SNMP Trigger Alert",
+            "properties": {},
+            "type": "object"
+        },
+        "SNMPDomotzSnmpTriggerCreation": {
+            "description": "SNMP Trigger",
+            "properties": {
+                "function_id": {
+                    "description": "The unique identifier of the sensor function",
+                    "format": "int32",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "The name of the trigger",
+                    "type": "string"
+                },
+                "operands": {
+                    "description": "The operands for the function",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                }
+            },
+            "required": [
+                "function_id",
+                "name",
+                "operands"
             ],
             "type": "object"
         },
@@ -1255,7 +2801,7 @@
             ]
         },
         "TCPDomotzEye": {
-            "description": "Information about a configured TCP Domotz Eye",
+            "description": "Information about a configured TCP Domotz Sensor",
             "properties": {
                 "device_id": {
                     "description": "The unique identifier of the device",
@@ -1263,7 +2809,7 @@
                     "type": "integer"
                 },
                 "id": {
-                    "description": "The unique identifier of the TCP Domotz Eye",
+                    "description": "The ID of the TCP Domotz Sensor",
                     "format": "int32",
                     "type": "integer"
                 },
@@ -1295,7 +2841,7 @@
             "type": "object"
         },
         "TCPDomotzEyeCreation": {
-            "description": "TCP Domotz Eye Data",
+            "description": "TCP Domotz Sensor Data",
             "properties": {
                 "port": {
                     "description": "The port number",
@@ -1384,17 +2930,51 @@
                 }
             },
             "type": "object"
+        },
+        "VariableHistorySample": {
+            "properties": {
+                "timestamp": {
+                    "description": "The time the sample was reported to Domotz",
+                    "format": "date-time",
+                    "type": "string"
+                },
+                "value": {
+                    "description": "The sample value",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "timestamp",
+                "value"
+            ],
+            "type": "object"
+        },
+        "WriteInventoryField": {
+            "description": "DTO Used for creating/updating Inventory fields",
+            "properties": {
+                "label": {
+                    "description": "A detailed description of the field, for documentation",
+                    "maxLength": 100,
+                    "type": "string"
+                }
+            },
+            "required": [
+                "label"
+            ],
+            "type": "object"
         }
     },
+    "host": "api-eu-west-1-cell-1.domotz.com",
     "info": {
         "contact": {
             "email": "support@domotz.com",
-            "name": "API Support"
+            "name": "API Support",
+            "url": "https://www.domotz.com/"
         },
         "description": "### The Domotz Public API\n\nUse the \"API Key Endpoint\" which you can retrieve from the Domotz Portal as the Base URL for your API calls.\n\nThe Domotz Public API uses standard HTTP response codes, authentication, and verbs. JSON format is used in responses and accepted for request bodies. All date-time formats are expressed as yyyy-mm-ddThh:mm:ss. Date-time must be expressed in UTC. Specification of different TimeZones are not allowed.\n\n### Domotz Webhook\nIt is possible to subscribe to events happening on the Domotz platform, both at an Agent level and Device level, through the usage of Webhooks.\n\nPlease refer to the [user-guide](https://help.domotz.com/user-guide/shared-alerts-webhooks-ticketing-systems/) on the usage of the Webhook as a possible contact channel to receive notification of events and how to create a Shared Alert Profile. Moreover, refer to [getAlertProfiles](#getalertprofiles), [bindAlertProfileToAgent](#bindalertprofiletoagent) and [bindAlertProfileToDevice](#bindalertprofiletodevice) on how to retrieve the list of Shared Alert Profiles and bind to Agents and Devices respectively. In those same sections you also have the list of all the possible Webhook events and references to the Schemas.\n",
         "termsOfService": "https://www.domotz.com/terms-and-conditions/",
         "title": "Domotz Public API",
-        "version": "1.0.1"
+        "version": "1.8.0"
     },
     "paths": {
         "/agent": {
@@ -1414,7 +2994,7 @@
                     },
                     {
                         "default": 0,
-                        "description": "The requested page number, 0-indexed",
+                        "description": "The requested page number, 0-indexed. Default value is 0",
                         "format": "int32",
                         "in": "query",
                         "minimum": 0,
@@ -1613,6 +3193,111 @@
                 ]
             }
         },
+        "/agent/{agent_id}/connection/vpn-session": {
+            "get": {
+                "operationId": "getAgentVPNActiveConnections",
+                "parameters": [
+                    {
+                        "description": "Agent ID",
+                        "format": "int32",
+                        "in": "path",
+                        "name": "agent_id",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Agent VPN Connection information",
+                        "schema": {
+                            "items": {
+                                "$ref": "#/definitions/AgentVPNActiveConnection"
+                            },
+                            "type": "array"
+                        }
+                    }
+                },
+                "summary": "Get the Active VPN connections for the `agent`",
+                "tags": [
+                    "agent"
+                ]
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "operationId": "createAgentVPNConnection",
+                "parameters": [
+                    {
+                        "description": "Agent ID",
+                        "format": "int32",
+                        "in": "path",
+                        "name": "agent_id",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/AgentVPNConnection"
+                        }
+                    }
+                ],
+                "produces": [
+                    "text/plain"
+                ],
+                "responses": {
+                    "201": {
+                        "description": "OpenVPN Configuration file content",
+                        "schema": {
+                            "format": "binary",
+                            "type": "string"
+                        }
+                    }
+                },
+                "summary": "Creates a temporary VPN server on the `agent` and returns the vpn configuration file content. Current consumption and consumption limits can be retrieved with a call to <a href='#getconnectionconsumption'> getConnectionConsumption</a> endpoint",
+                "tags": [
+                    "actions"
+                ]
+            }
+        },
+        "/agent/{agent_id}/connection/vpn-session/{vpn_session_id}": {
+            "delete": {
+                "operationId": "deleteAgentVPNConnection",
+                "parameters": [
+                    {
+                        "description": "Agent ID",
+                        "format": "int32",
+                        "in": "path",
+                        "name": "agent_id",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "description": "Session ID",
+                        "format": "int32",
+                        "in": "path",
+                        "name": "vpn_session_id",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    }
+                },
+                "summary": "Closes an active VPN connection session for the `agent`",
+                "tags": [
+                    "actions"
+                ]
+            }
+        },
         "/agent/{agent_id}/device": {
             "delete": {
                 "operationId": "deleteDownDevices",
@@ -1694,7 +3379,7 @@
                         "description": "The list of configured SNMP Domotz Sensors on the agent",
                         "schema": {
                             "items": {
-                                "$ref": "#/definitions/SNMPDomotzEye"
+                                "$ref": "#/definitions/SNMPDomotzAgentEye"
                             },
                             "type": "array"
                         }
@@ -1876,6 +3561,243 @@
                 ]
             }
         },
+        "/agent/{agent_id}/device/{device_id}/action/power/{field}": {
+            "post": {
+                "operationId": "powerActionOnDevice",
+                "parameters": [
+                    {
+                        "description": "Agent ID",
+                        "format": "int32",
+                        "in": "path",
+                        "name": "agent_id",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "description": "Device ID",
+                        "format": "int32",
+                        "in": "path",
+                        "name": "device_id",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "description": "Specifies the power action to perform",
+                        "enum": [
+                            "on",
+                            "off",
+                            "cycle",
+                            "software-reboot"
+                        ],
+                        "in": "path",
+                        "name": "field",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    }
+                },
+                "summary": "Performs the action on the device, according to the specified {<b> field </b>} value. The availability of such operations can be determined with a call to <a href='#getdevicepoweractions'> getDevicePowerActions </a>  operation",
+                "tags": [
+                    "device"
+                ]
+            }
+        },
+        "/agent/{agent_id}/device/{device_id}/application": {
+            "get": {
+                "operationId": "listDeviceApplications",
+                "parameters": [
+                    {
+                        "description": "Agent ID",
+                        "format": "int32",
+                        "in": "path",
+                        "name": "agent_id",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "description": "Device ID",
+                        "format": "int32",
+                        "in": "path",
+                        "name": "device_id",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "default": 100,
+                        "description": "The maximum number of items to return. Min value is 1. Max value is 1000. Default value is 100",
+                        "format": "int32",
+                        "in": "query",
+                        "maximum": 1000,
+                        "minimum": 1,
+                        "name": "page_size",
+                        "required": false,
+                        "type": "integer"
+                    },
+                    {
+                        "default": 0,
+                        "description": "The requested page number, 0-indexed. Default value is 0",
+                        "format": "int32",
+                        "in": "query",
+                        "minimum": 0,
+                        "name": "page_number",
+                        "required": false,
+                        "type": "integer"
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The list of applications of the device",
+                        "schema": {
+                            "items": {
+                                "$ref": "#/definitions/DeviceApplicationField"
+                            },
+                            "type": "array"
+                        }
+                    }
+                },
+                "summary": "Retrieves the list of applications of the device. The feature is only available on agents having the Booster Pack",
+                "tags": [
+                    "device"
+                ]
+            },
+            "head": {
+                "operationId": "countDeviceApplications",
+                "parameters": [
+                    {
+                        "description": "Agent ID",
+                        "format": "int32",
+                        "in": "path",
+                        "name": "agent_id",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "description": "Device ID",
+                        "format": "int32",
+                        "in": "path",
+                        "name": "device_id",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Returns the application count",
+                        "headers": {
+                            "X-Entities-Count": {
+                                "description": "Returns the application count",
+                                "format": "int32",
+                                "type": "integer"
+                            }
+                        }
+                    }
+                },
+                "summary": "Counts the applications",
+                "tags": [
+                    "device"
+                ]
+            }
+        },
+        "/agent/{agent_id}/device/{device_id}/connection": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "operationId": "connectToDevice",
+                "parameters": [
+                    {
+                        "description": "Agent ID",
+                        "format": "int32",
+                        "in": "path",
+                        "name": "agent_id",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "description": "Device ID",
+                        "format": "int32",
+                        "in": "path",
+                        "name": "device_id",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/DeviceConnection"
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "201": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/ConnectionSession"
+                        }
+                    }
+                },
+                "summary": "Establishes a direct secure connection to the `device` Current consumption and consumption limits can be retrieved with a call to <a href='#getconnectionconsumption'> getConnectionConsumption</a> endpoint",
+                "tags": [
+                    "actions"
+                ]
+            }
+        },
+        "/agent/{agent_id}/device/{device_id}/credentials": {
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "operationId": "setCredentials",
+                "parameters": [
+                    {
+                        "description": "Agent ID",
+                        "format": "int32",
+                        "in": "path",
+                        "name": "agent_id",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "description": "Device ID",
+                        "format": "int32",
+                        "in": "path",
+                        "name": "device_id",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "description": "device credentials payload",
+                        "in": "body",
+                        "name": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/DeviceCredentials"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    }
+                },
+                "summary": "Sets the device credentials to perform extended discovery. This operation will affect the <b> authentication_status </b> of the device",
+                "tags": [
+                    "device"
+                ]
+            }
+        },
         "/agent/{agent_id}/device/{device_id}/eye/snmp": {
             "get": {
                 "operationId": "listEyesSNMP",
@@ -1902,7 +3824,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "The list of configured SNMP Domotz Eyes for the device and their latest values",
+                        "description": "The list of configured SNMP Domotz Sensors for the device and their latest values",
                         "schema": {
                             "items": {
                                 "$ref": "#/definitions/SNMPDomotzEye"
@@ -1911,7 +3833,7 @@
                         }
                     }
                 },
-                "summary": "Retrieves the list of configured SNMP Domotz Eyes",
+                "summary": "Retrieves the list of configured SNMP Domotz Sensors",
                 "tags": [
                     "SNMP/TCP SENSORS"
                 ]
@@ -1952,7 +3874,47 @@
                         "description": ""
                     }
                 },
-                "summary": "Creates a new SNMP Domotz Eyes",
+                "summary": "Creates a new SNMP Domotz Sensors",
+                "tags": [
+                    "SNMP/TCP SENSORS"
+                ]
+            }
+        },
+        "/agent/{agent_id}/device/{device_id}/eye/snmp/{sensor_id}": {
+            "delete": {
+                "operationId": "deleteEyeSNMP",
+                "parameters": [
+                    {
+                        "description": "Agent ID",
+                        "format": "int32",
+                        "in": "path",
+                        "name": "agent_id",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "description": "Device ID",
+                        "format": "int32",
+                        "in": "path",
+                        "name": "device_id",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "description": "SNMP Sensor ID",
+                        "format": "int32",
+                        "in": "path",
+                        "name": "sensor_id",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    }
+                },
+                "summary": "Deletes the SNMP Domotz Sensor",
                 "tags": [
                     "SNMP/TCP SENSORS"
                 ]
@@ -1979,7 +3941,7 @@
                         "type": "integer"
                     },
                     {
-                        "description": "SNMP Eye ID",
+                        "description": "SNMP Sensor ID",
                         "format": "int32",
                         "in": "path",
                         "name": "sensor_id",
@@ -2001,7 +3963,7 @@
                         }
                     }
                 },
-                "summary": "Retrieves the list of functions for the SNMP trigger Domotz Eyes",
+                "summary": "Retrieves the list of functions for the SNMP trigger Domotz Sensors",
                 "tags": [
                     "SNMP/TCP SENSORS"
                 ]
@@ -2028,7 +3990,7 @@
                         "type": "integer"
                     },
                     {
-                        "description": "SNMP Eye ID",
+                        "description": "SNMP Sensor ID",
                         "format": "int32",
                         "in": "path",
                         "name": "sensor_id",
@@ -2055,7 +4017,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "The list of SNMP Domotz Eyes samples",
+                        "description": "The list of SNMP Domotz Sensors samples",
                         "schema": {
                             "items": {
                                 "$ref": "#/definitions/DeviceEyeSNMPHistorySample"
@@ -2064,7 +4026,7 @@
                         }
                     }
                 },
-                "summary": "Returns the time series of the SNMP Domotz Eyes collected samples",
+                "summary": "Returns the time series of the SNMP Domotz Sensors collected samples",
                 "tags": [
                     "SNMP/TCP SENSORS"
                 ]
@@ -2091,7 +4053,7 @@
                         "type": "integer"
                     },
                     {
-                        "description": "SNMP Eye ID",
+                        "description": "SNMP Sensor ID",
                         "format": "int32",
                         "in": "path",
                         "name": "sensor_id",
@@ -2114,6 +4076,230 @@
                     }
                 },
                 "summary": "Retrieves the list of triggers for the SNMP Sensor",
+                "tags": [
+                    "SNMP/TCP SENSORS"
+                ]
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "operationId": "createEyeSNMPTrigger",
+                "parameters": [
+                    {
+                        "description": "Agent ID",
+                        "format": "int32",
+                        "in": "path",
+                        "name": "agent_id",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "description": "Device ID",
+                        "format": "int32",
+                        "in": "path",
+                        "name": "device_id",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "description": "SNMP Sensor ID",
+                        "format": "int32",
+                        "in": "path",
+                        "name": "sensor_id",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/SNMPDomotzSnmpTriggerCreation"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": ""
+                    }
+                },
+                "summary": "Creates a new SNMP Trigger for the sensor. \n\nFor instance, to receive a notification when the value of the sensor is above a threshold x, it is required to add a trigger specifying the function_id = 2 (is greater than) and the operand value equals to [x]. \nThe function_id value can be retrieved with the listEyesSNMPTriggerFunction call. \nTo activate the alert, it is required to call createEyeSNMPTriggerAlert after the trigger creation.",
+                "tags": [
+                    "SNMP/TCP SENSORS"
+                ]
+            }
+        },
+        "/agent/{agent_id}/device/{device_id}/eye/snmp/{sensor_id}/trigger/{trigger_id}": {
+            "delete": {
+                "operationId": "deleteEyeSNMPTrigger",
+                "parameters": [
+                    {
+                        "description": "Agent ID",
+                        "format": "int32",
+                        "in": "path",
+                        "name": "agent_id",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "description": "Device ID",
+                        "format": "int32",
+                        "in": "path",
+                        "name": "device_id",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "description": "SNMP Sensor ID",
+                        "format": "int32",
+                        "in": "path",
+                        "name": "sensor_id",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "description": "SNMP Sensor Trigger ID",
+                        "format": "int32",
+                        "in": "path",
+                        "name": "trigger_id",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    }
+                },
+                "summary": "Deletes the SNMP Trigger for the sensor",
+                "tags": [
+                    "SNMP/TCP SENSORS"
+                ]
+            }
+        },
+        "/agent/{agent_id}/device/{device_id}/eye/snmp/{sensor_id}/trigger/{trigger_id}/alert/{medium_name}": {
+            "delete": {
+                "operationId": "deleteEyeSNMPTriggerAlert",
+                "parameters": [
+                    {
+                        "description": "Agent ID",
+                        "format": "int32",
+                        "in": "path",
+                        "name": "agent_id",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "description": "Device ID",
+                        "format": "int32",
+                        "in": "path",
+                        "name": "device_id",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "description": "SNMP Sensor ID",
+                        "format": "int32",
+                        "in": "path",
+                        "name": "sensor_id",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "description": "SNMP Sensor Trigger ID",
+                        "format": "int32",
+                        "in": "path",
+                        "name": "trigger_id",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "description": "the name of the medium",
+                        "enum": [
+                            "email",
+                            "mobile"
+                        ],
+                        "in": "path",
+                        "name": "medium_name",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    }
+                },
+                "summary": "Deletes the alert for thee SNMP Trigger",
+                "tags": [
+                    "SNMP/TCP SENSORS"
+                ]
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "operationId": "createEyeSNMPTriggerAlert",
+                "parameters": [
+                    {
+                        "description": "Agent ID",
+                        "format": "int32",
+                        "in": "path",
+                        "name": "agent_id",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "description": "Device ID",
+                        "format": "int32",
+                        "in": "path",
+                        "name": "device_id",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "description": "SNMP Sensor ID",
+                        "format": "int32",
+                        "in": "path",
+                        "name": "sensor_id",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "description": "SNMP Sensor Trigger ID",
+                        "format": "int32",
+                        "in": "path",
+                        "name": "trigger_id",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "description": "the name of the medium",
+                        "enum": [
+                            "email",
+                            "mobile"
+                        ],
+                        "in": "path",
+                        "name": "medium_name",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/SNMPDomotzSnmpTriggerAlertCreation"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": ""
+                    }
+                },
+                "summary": "Add an alert to a SNMP Trigger",
                 "tags": [
                     "SNMP/TCP SENSORS"
                 ]
@@ -2145,7 +4331,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "The list of configured TCP Domotz Eyes for the device and their latest values",
+                        "description": "The list of configured TCP Domotz Sensors for the device and their latest values",
                         "schema": {
                             "items": {
                                 "$ref": "#/definitions/TCPDomotzEye"
@@ -2154,7 +4340,7 @@
                         }
                     }
                 },
-                "summary": "Retrieves the list of configured TCP Domotz Eyes",
+                "summary": "Retrieves the list of configured TCP Domotz Sensors",
                 "tags": [
                     "SNMP/TCP SENSORS"
                 ]
@@ -2195,7 +4381,47 @@
                         "description": ""
                     }
                 },
-                "summary": "Creates a new TCP Domotz Eyes",
+                "summary": "Creates a new TCP Domotz Sensors",
+                "tags": [
+                    "SNMP/TCP SENSORS"
+                ]
+            }
+        },
+        "/agent/{agent_id}/device/{device_id}/eye/tcp/{service_id}": {
+            "delete": {
+                "operationId": "deleteEyeTCP",
+                "parameters": [
+                    {
+                        "description": "Agent ID",
+                        "format": "int32",
+                        "in": "path",
+                        "name": "agent_id",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "description": "Device ID",
+                        "format": "int32",
+                        "in": "path",
+                        "name": "device_id",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "description": "TCP Sensor ID",
+                        "format": "int32",
+                        "in": "path",
+                        "name": "service_id",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    }
+                },
+                "summary": "Deletes the TCP Domotz Sensor",
                 "tags": [
                     "SNMP/TCP SENSORS"
                 ]
@@ -2311,6 +4537,176 @@
                 ]
             }
         },
+        "/agent/{agent_id}/device/{device_id}/inventory": {
+            "get": {
+                "operationId": "getDeviceInventory",
+                "parameters": [
+                    {
+                        "description": "Agent ID",
+                        "format": "int32",
+                        "in": "path",
+                        "name": "agent_id",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "description": "Device ID",
+                        "format": "int32",
+                        "in": "path",
+                        "name": "device_id",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The device's inventory, with the fields sorted alphabetically. Not set fields will be null",
+                        "schema": {
+                            "items": {
+                                "$ref": "#/definitions/DeviceInventoryField"
+                            },
+                            "type": "array"
+                        }
+                    }
+                },
+                "summary": "Returns the device's inventory data",
+                "tags": [
+                    "inventory"
+                ]
+            }
+        },
+        "/agent/{agent_id}/device/{device_id}/inventory/{inventory_field}": {
+            "delete": {
+                "operationId": "deleteDeviceInventoryField",
+                "parameters": [
+                    {
+                        "description": "Agent ID",
+                        "format": "int32",
+                        "in": "path",
+                        "name": "agent_id",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "description": "Device ID",
+                        "format": "int32",
+                        "in": "path",
+                        "name": "device_id",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "description": "Field identifier, unique within the Inventory",
+                        "in": "path",
+                        "name": "inventory_field",
+                        "pattern": "^[a-z][a-z0-9_-]{0,24}$",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    }
+                },
+                "summary": "Deletes the Inventory field for the device",
+                "tags": [
+                    "inventory"
+                ]
+            },
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "operationId": "setDeviceInventoryFieldValue",
+                "parameters": [
+                    {
+                        "description": "Agent ID",
+                        "format": "int32",
+                        "in": "path",
+                        "name": "agent_id",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "description": "Device ID",
+                        "format": "int32",
+                        "in": "path",
+                        "name": "device_id",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "description": "Field identifier, unique within the Inventory",
+                        "in": "path",
+                        "name": "inventory_field",
+                        "pattern": "^[a-z][a-z0-9_-]{0,24}$",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "required": true,
+                        "schema": {
+                            "maxLength": 255,
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    }
+                },
+                "summary": "Sets the value of an Inventory field for the device, a value can't be set to `null`",
+                "tags": [
+                    "inventory"
+                ]
+            }
+        },
+        "/agent/{agent_id}/device/{device_id}/multimedia/camera/snapshot": {
+            "get": {
+                "operationId": "onvifSnapshot",
+                "parameters": [
+                    {
+                        "description": "Agent ID",
+                        "format": "int32",
+                        "in": "path",
+                        "name": "agent_id",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "description": "Device ID",
+                        "format": "int32",
+                        "in": "path",
+                        "name": "device_id",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "produces": [
+                    "application/octet-stream"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "A binary image",
+                        "schema": {
+                            "format": "binary",
+                            "type": "string"
+                        }
+                    }
+                },
+                "summary": "Take a snapshot of the camera. Internally, a device connection is established.Current consumption and consumption limits can be retrieved with a call to <a href='#getconnectionconsumption'> getConnectionConsumption</a> endpoint",
+                "tags": [
+                    "multimedia"
+                ]
+            }
+        },
         "/agent/{agent_id}/device/{device_id}/snmp-authentication": {
             "get": {
                 "operationId": "getSNMPAuthentication",
@@ -2390,6 +4786,50 @@
                 ]
             }
         },
+        "/agent/{agent_id}/device/{device_id}/snmp-community": {
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "operationId": "setSnmpCommunity",
+                "parameters": [
+                    {
+                        "description": "Agent ID",
+                        "format": "int32",
+                        "in": "path",
+                        "name": "agent_id",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "description": "Device ID",
+                        "format": "int32",
+                        "in": "path",
+                        "name": "device_id",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "description": "The value that the snmp community entries will change to",
+                        "in": "body",
+                        "name": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/DeviceSnmpCommunity"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    }
+                },
+                "summary": "Saves a snmp community (read, optionally write) on device. _Deprecated_, please use <a href='#setsnmpauthentication'> setSNMPAuthentication </a>",
+                "tags": [
+                    "device"
+                ]
+            }
+        },
         "/agent/{agent_id}/device/{device_id}/uptime": {
             "get": {
                 "operationId": "getDeviceUptime",
@@ -2439,6 +4879,270 @@
                 "summary": "Returns the uptime of the device",
                 "tags": [
                     "metrics"
+                ]
+            }
+        },
+        "/agent/{agent_id}/device/{device_id}/variable": {
+            "get": {
+                "operationId": "listDeviceVariables",
+                "parameters": [
+                    {
+                        "description": "Agent ID",
+                        "format": "int32",
+                        "in": "path",
+                        "name": "agent_id",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "description": "Device ID",
+                        "format": "int32",
+                        "in": "path",
+                        "name": "device_id",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "default": 100,
+                        "description": "The maximum number of items to return. Min value is 1. Max value is 1000. Default value is 100",
+                        "format": "int32",
+                        "in": "query",
+                        "maximum": 1000,
+                        "minimum": 1,
+                        "name": "page_size",
+                        "required": false,
+                        "type": "integer"
+                    },
+                    {
+                        "default": 0,
+                        "description": "The requested page number, 0-indexed. Default value is 0",
+                        "format": "int32",
+                        "in": "query",
+                        "minimum": 0,
+                        "name": "page_number",
+                        "required": false,
+                        "type": "integer"
+                    },
+                    {
+                        "description": "Allows filtering by `value`",
+                        "in": "query",
+                        "name": "value",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "description": "Allows filtering by `path`",
+                        "in": "query",
+                        "name": "path",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "description": "Allows ordering by `path`, `id`, `value`, `label`, `value_update_time`, `creation_time`",
+                        "enum": [
+                            "path",
+                            "id",
+                            "value",
+                            "label",
+                            "value_update_time",
+                            "creation_time"
+                        ],
+                        "in": "query",
+                        "name": "sort_by",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "description": "The default is `asc`",
+                        "enum": [
+                            "asc",
+                            "desc"
+                        ],
+                        "in": "query",
+                        "name": "sorting_direction",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "description": "Allows filtering by `has_history` field",
+                        "in": "query",
+                        "name": "has_history",
+                        "required": false,
+                        "type": "boolean"
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The list of device variables",
+                        "schema": {
+                            "items": {
+                                "$ref": "#/definitions/DeviceVariable"
+                            },
+                            "type": "array"
+                        }
+                    }
+                },
+                "summary": "Retrieves the list of device variables",
+                "tags": [
+                    "variables"
+                ]
+            },
+            "head": {
+                "operationId": "countDeviceVariables",
+                "parameters": [
+                    {
+                        "description": "Agent ID",
+                        "format": "int32",
+                        "in": "path",
+                        "name": "agent_id",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "description": "Device ID",
+                        "format": "int32",
+                        "in": "path",
+                        "name": "device_id",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "description": "Allows filtering by `value`",
+                        "in": "query",
+                        "name": "value",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "description": "Allows filtering by `path`",
+                        "in": "query",
+                        "name": "path",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "description": "Allows filtering by `has_history` field",
+                        "in": "query",
+                        "name": "has_history",
+                        "required": false,
+                        "type": "boolean"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "The device variables count",
+                        "headers": {
+                            "X-Entities-Count": {
+                                "description": "The device variables count",
+                                "format": "int32",
+                                "type": "integer"
+                            }
+                        }
+                    }
+                },
+                "summary": "Returns device variables count",
+                "tags": [
+                    "variables"
+                ]
+            }
+        },
+        "/agent/{agent_id}/device/{device_id}/variable/{variable_id}/history": {
+            "get": {
+                "operationId": "getVariableHistory",
+                "parameters": [
+                    {
+                        "description": "Agent ID",
+                        "format": "int32",
+                        "in": "path",
+                        "name": "agent_id",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "description": "Device ID",
+                        "format": "int32",
+                        "in": "path",
+                        "name": "device_id",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "description": "Variable ID",
+                        "format": "int32",
+                        "in": "path",
+                        "name": "variable_id",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "description": "The start time of the time series. Default value is one week",
+                        "format": "date-time",
+                        "in": "query",
+                        "name": "from",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "description": "The end time of the time series. Default value is now",
+                        "format": "date-time",
+                        "in": "query",
+                        "name": "to",
+                        "required": false,
+                        "type": "string"
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The variable's history, a list of dictionaries, each composed by the timestamp (a datetime) and the value (a string)",
+                        "schema": {
+                            "items": {
+                                "$ref": "#/definitions/VariableHistorySample"
+                            },
+                            "type": "array"
+                        }
+                    }
+                },
+                "summary": "Returns the variable history",
+                "tags": [
+                    "variables"
+                ]
+            }
+        },
+        "/agent/{agent_id}/device/{device_id}/visibility": {
+            "delete": {
+                "operationId": "hideDevice",
+                "parameters": [
+                    {
+                        "description": "Agent ID",
+                        "format": "int32",
+                        "in": "path",
+                        "name": "agent_id",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "description": "Device ID",
+                        "format": "int32",
+                        "in": "path",
+                        "name": "device_id",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    }
+                },
+                "summary": "Hides a device (available only on DOWN devices)",
+                "tags": [
+                    "device"
                 ]
             }
         },
@@ -2520,13 +5224,13 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "A data structure containing information about current Domotz Eyes usage and limits",
+                        "description": "A data structure containing information about current Domotz Sensors usage and limits",
                         "schema": {
                             "$ref": "#/definitions/DomotzEyesUsageInformation"
                         }
                     }
                 },
-                "summary": "Retrieves information about Domotz Eyes usage and limits",
+                "summary": "Retrieves information about Domotz Sensors usage and limits",
                 "tags": [
                     "SNMP/TCP SENSORS"
                 ]
@@ -2626,6 +5330,270 @@
                 ]
             }
         },
+        "/agent/{agent_id}/network-topology": {
+            "get": {
+                "operationId": "getNetworkTopology",
+                "parameters": [
+                    {
+                        "description": "Agent ID",
+                        "format": "int32",
+                        "in": "path",
+                        "name": "agent_id",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/NetworkTopology"
+                        }
+                    }
+                },
+                "summary": "Returns the agent's network topology",
+                "tags": [
+                    "topology"
+                ]
+            }
+        },
+        "/agent/{agent_id}/network/interfaces": {
+            "get": {
+                "operationId": "getAgentInterfaces",
+                "parameters": [
+                    {
+                        "description": "Agent ID",
+                        "format": "int32",
+                        "in": "path",
+                        "name": "agent_id",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The networks monitored by the agent",
+                        "schema": {
+                            "$ref": "#/definitions/AllAgentInterfaces"
+                        }
+                    }
+                },
+                "summary": "Returns the networks monitored by the agent",
+                "tags": [
+                    "networking"
+                ]
+            }
+        },
+        "/agent/{agent_id}/network/interfaces-policy": {
+            "delete": {
+                "operationId": "deleteAgentInterfacesPolicy",
+                "parameters": [
+                    {
+                        "description": "Agent ID",
+                        "format": "int32",
+                        "in": "path",
+                        "name": "agent_id",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    }
+                },
+                "summary": "Resets the network interface filtering policy to the default value",
+                "tags": [
+                    "networking"
+                ]
+            },
+            "get": {
+                "operationId": "getAgentInterfacesPolicy",
+                "parameters": [
+                    {
+                        "description": "Agent ID",
+                        "format": "int32",
+                        "in": "path",
+                        "name": "agent_id",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The current network interface filtering policy",
+                        "schema": {
+                            "$ref": "#/definitions/AgentInterfacesPolicy"
+                        }
+                    }
+                },
+                "summary": "Returns the current network interface filtering policy. The interfaces policy defines the set of interfaces which will be ignored (`deny`) or scanned (`allow`) by the agent. The default behavior is to scan all available interfaces",
+                "tags": [
+                    "networking"
+                ]
+            },
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "operationId": "setAgentInterfacesPolicy",
+                "parameters": [
+                    {
+                        "description": "Agent ID",
+                        "format": "int32",
+                        "in": "path",
+                        "name": "agent_id",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "description": "the filtering policy to be applied",
+                        "in": "body",
+                        "name": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/AgentInterfacesPolicy"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    }
+                },
+                "summary": "Updates the current network interface filtering policy",
+                "tags": [
+                    "networking"
+                ]
+            }
+        },
+        "/agent/{agent_id}/network/ip-scan-policy": {
+            "delete": {
+                "operationId": "deleteAgentIPScanPolicy",
+                "parameters": [
+                    {
+                        "description": "Agent ID",
+                        "format": "int32",
+                        "in": "path",
+                        "name": "agent_id",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    }
+                },
+                "summary": "Resets the IP scan policy to the default value",
+                "tags": [
+                    "networking"
+                ]
+            },
+            "get": {
+                "operationId": "getAgentIPScanPolicy",
+                "parameters": [
+                    {
+                        "description": "Agent ID",
+                        "format": "int32",
+                        "in": "path",
+                        "name": "agent_id",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The IP scan policy.",
+                        "schema": {
+                            "$ref": "#/definitions/AgentIPScanPolicy"
+                        }
+                    }
+                },
+                "summary": "Returns the current IP addresses management policy. A set of IP addresses to be always scanned can be specified in the `forced_ip_addresses` array. ",
+                "tags": [
+                    "networking"
+                ]
+            },
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "operationId": "setAgentIPScanPolicy",
+                "parameters": [
+                    {
+                        "description": "Agent ID",
+                        "format": "int32",
+                        "in": "path",
+                        "name": "agent_id",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "description": "the IP scan policy to be applied",
+                        "in": "body",
+                        "name": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/AgentIPScanPolicy"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    }
+                },
+                "summary": "Updates the current IP address scan policy. The list of IP addresses provided in `forced_ip_addresses` will be scanned regardless of the automatic discovery settings of the agent.",
+                "tags": [
+                    "networking"
+                ]
+            }
+        },
+        "/agent/{agent_id}/ownership/team/{team_id}": {
+            "put": {
+                "operationId": "moveAgent",
+                "parameters": [
+                    {
+                        "description": "Agent ID",
+                        "format": "int32",
+                        "in": "path",
+                        "name": "agent_id",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "description": "Team ID",
+                        "format": "int32",
+                        "in": "path",
+                        "name": "team_id",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    }
+                },
+                "summary": "Moves an agent under the control of a different team",
+                "tags": [
+                    "company"
+                ]
+            }
+        },
         "/agent/{agent_id}/uptime": {
             "get": {
                 "operationId": "getAgentUptime",
@@ -2667,6 +5635,30 @@
                 "summary": "Returns the uptime of the agent",
                 "tags": [
                     "metrics"
+                ]
+            }
+        },
+        "/alert-profile": {
+            "get": {
+                "operationId": "getAlertProfiles2",
+                "parameters": [],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The list of configured alert profiles",
+                        "schema": {
+                            "items": {
+                                "$ref": "#/definitions/AlertProfile"
+                            },
+                            "type": "array"
+                        }
+                    }
+                },
+                "summary": "Returns the list of configured alert profiles. You can configure alert profiles on the Domotz Portal. Alert profiles define the association between a list of events and a notification channel (email, webhook or slack)",
+                "tags": [
+                    "alert profiles"
                 ]
             }
         },
@@ -2731,6 +5723,546 @@
                     }
                 },
                 "summary": "Get the alert profile bindings of the devices of an agent",
+                "tags": [
+                    "alert profiles"
+                ]
+            }
+        },
+        "/alert-profile/{alert_profile_id}/binding/agent/{agent_id}": {
+            "delete": {
+                "operationId": "unbindAlertProfileFromAgent",
+                "parameters": [
+                    {
+                        "description": "Agent ID",
+                        "format": "int32",
+                        "in": "path",
+                        "name": "agent_id",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "description": "Profile ID",
+                        "format": "int32",
+                        "in": "path",
+                        "name": "alert_profile_id",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    }
+                },
+                "summary": "Unbind an alert profile from an agent.",
+                "tags": [
+                    "alert profiles"
+                ]
+            },
+            "post": {
+                "callbacks": {
+                    "agent_device_discovery": {
+                        "": {
+                            "post": {
+                                "requestBody": {
+                                    "content": {
+                                        "application/json": {
+                                            "schema": {
+                                                "$ref": "#/definitions/DeviceDiscoveryEvent"
+                                            }
+                                        }
+                                    },
+                                    "description": "",
+                                    "required": true
+                                },
+                                "responses": {
+                                    "201": {
+                                        "description": ""
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "agent_feature_discovery": {
+                        "": {
+                            "post": {
+                                "requestBody": {
+                                    "content": {
+                                        "application/json": {
+                                            "schema": {
+                                                "$ref": "#/definitions/FeatureDiscoveryEvent"
+                                            }
+                                        }
+                                    },
+                                    "description": "",
+                                    "required": true
+                                },
+                                "responses": {
+                                    "201": {
+                                        "description": ""
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "agent_feature_discovery_mib": {
+                        "": {
+                            "post": {
+                                "requestBody": {
+                                    "content": {
+                                        "application/json": {
+                                            "schema": {
+                                                "$ref": "#/definitions/MibDiscoveryEvent"
+                                            }
+                                        }
+                                    },
+                                    "description": "",
+                                    "required": true
+                                },
+                                "responses": {
+                                    "201": {
+                                        "description": ""
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "agent_lan_change": {
+                        "": {
+                            "post": {
+                                "requestBody": {
+                                    "content": {
+                                        "application/json": {
+                                            "schema": {
+                                                "$ref": "#/definitions/AgentLANChangeEvent"
+                                            }
+                                        }
+                                    },
+                                    "description": "",
+                                    "required": true
+                                },
+                                "responses": {
+                                    "201": {
+                                        "description": ""
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "agent_security_issue": {
+                        "": {
+                            "post": {
+                                "requestBody": {
+                                    "content": {
+                                        "application/json": {
+                                            "schema": {
+                                                "$ref": "#/definitions/AgentSecurityIssueEvent"
+                                            }
+                                        }
+                                    },
+                                    "description": "",
+                                    "required": true
+                                },
+                                "responses": {
+                                    "201": {
+                                        "description": ""
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "agent_speed_test": {
+                        "": {
+                            "post": {
+                                "requestBody": {
+                                    "content": {
+                                        "application/json": {
+                                            "schema": {
+                                                "$ref": "#/definitions/AgentSpeedTestEvent"
+                                            }
+                                        }
+                                    },
+                                    "description": "",
+                                    "required": true
+                                },
+                                "responses": {
+                                    "201": {
+                                        "description": ""
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "agent_status_down": {
+                        "": {
+                            "post": {
+                                "requestBody": {
+                                    "content": {
+                                        "application/json": {
+                                            "schema": {
+                                                "$ref": "#/definitions/AgentStatusEvent"
+                                            }
+                                        }
+                                    },
+                                    "description": "",
+                                    "required": true
+                                },
+                                "responses": {
+                                    "201": {
+                                        "description": ""
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "agent_status_up": {
+                        "": {
+                            "post": {
+                                "requestBody": {
+                                    "content": {
+                                        "application/json": {
+                                            "schema": {
+                                                "$ref": "#/definitions/AgentStatusEvent"
+                                            }
+                                        }
+                                    },
+                                    "description": "",
+                                    "required": true
+                                },
+                                "responses": {
+                                    "201": {
+                                        "description": ""
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "agent_wan_change": {
+                        "": {
+                            "post": {
+                                "requestBody": {
+                                    "content": {
+                                        "application/json": {
+                                            "schema": {
+                                                "$ref": "#/definitions/AgentWANChangeEvent"
+                                            }
+                                        }
+                                    },
+                                    "description": "",
+                                    "required": true
+                                },
+                                "responses": {
+                                    "201": {
+                                        "description": ""
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "operationId": "bindAlertProfileToAgent",
+                "parameters": [
+                    {
+                        "description": "Agent ID",
+                        "format": "int32",
+                        "in": "path",
+                        "name": "agent_id",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "description": "Profile ID",
+                        "format": "int32",
+                        "in": "path",
+                        "name": "alert_profile_id",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    }
+                },
+                "summary": "Bind an alert profile to an agent. After binding, a webhook will be sent to the configured service when one of the events associated to the profile occurs. You can configure the profile and the webhook endpoint on the Domotz Portal",
+                "tags": [
+                    "alert profiles"
+                ]
+            }
+        },
+        "/alert-profile/{alert_profile_id}/binding/agent/{agent_id}/device/{device_id}": {
+            "delete": {
+                "operationId": "unbindAlertProfileFromDevice",
+                "parameters": [
+                    {
+                        "description": "Agent ID",
+                        "format": "int32",
+                        "in": "path",
+                        "name": "agent_id",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "description": "Profile ID",
+                        "format": "int32",
+                        "in": "path",
+                        "name": "alert_profile_id",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "description": "Device ID",
+                        "format": "int32",
+                        "in": "path",
+                        "name": "device_id",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    }
+                },
+                "summary": "Unbind an alert profile from a device",
+                "tags": [
+                    "alert profiles"
+                ]
+            },
+            "post": {
+                "callbacks": {
+                    "device_configuration_change": {
+                        "": {
+                            "post": {
+                                "requestBody": {
+                                    "content": {
+                                        "application/json": {
+                                            "schema": {
+                                                "$ref": "#/definitions/DeviceConfigurationChangeEvent"
+                                            }
+                                        }
+                                    },
+                                    "description": "",
+                                    "required": true
+                                },
+                                "responses": {
+                                    "201": {
+                                        "description": ""
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "device_configuration_misalignment": {
+                        "": {
+                            "post": {
+                                "requestBody": {
+                                    "content": {
+                                        "application/json": {
+                                            "schema": {
+                                                "$ref": "#/definitions/DeviceConfigurationMisalignmentEvent"
+                                            }
+                                        }
+                                    },
+                                    "description": "",
+                                    "required": true
+                                },
+                                "responses": {
+                                    "201": {
+                                        "description": ""
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "device_heartbeat_lost": {
+                        "": {
+                            "post": {
+                                "requestBody": {
+                                    "content": {
+                                        "application/json": {
+                                            "schema": {
+                                                "$ref": "#/definitions/DeviceHeartbeatLostEvent"
+                                            }
+                                        }
+                                    },
+                                    "description": "",
+                                    "required": true
+                                },
+                                "responses": {
+                                    "201": {
+                                        "description": ""
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "device_ip_change": {
+                        "": {
+                            "post": {
+                                "requestBody": {
+                                    "content": {
+                                        "application/json": {
+                                            "schema": {
+                                                "$ref": "#/definitions/DeviceIPChangeEvent"
+                                            }
+                                        }
+                                    },
+                                    "description": "",
+                                    "required": true
+                                },
+                                "responses": {
+                                    "201": {
+                                        "description": ""
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "device_rtd": {
+                        "": {
+                            "post": {
+                                "requestBody": {
+                                    "content": {
+                                        "application/json": {
+                                            "schema": {
+                                                "$ref": "#/definitions/DeviceRTDIssueEvent"
+                                            }
+                                        }
+                                    },
+                                    "description": "",
+                                    "required": true
+                                },
+                                "responses": {
+                                    "201": {
+                                        "description": ""
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "device_snmp": {
+                        "": {
+                            "post": {
+                                "requestBody": {
+                                    "content": {
+                                        "application/json": {
+                                            "schema": {
+                                                "$ref": "#/definitions/DeviceSNMPEvent"
+                                            }
+                                        }
+                                    },
+                                    "description": "",
+                                    "required": true
+                                },
+                                "responses": {
+                                    "201": {
+                                        "description": ""
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "device_status_down": {
+                        "": {
+                            "post": {
+                                "requestBody": {
+                                    "content": {
+                                        "application/json": {
+                                            "schema": {
+                                                "$ref": "#/definitions/DeviceStatusChangeEvent"
+                                            }
+                                        }
+                                    },
+                                    "description": "",
+                                    "required": true
+                                },
+                                "responses": {
+                                    "201": {
+                                        "description": ""
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "device_status_up": {
+                        "": {
+                            "post": {
+                                "requestBody": {
+                                    "content": {
+                                        "application/json": {
+                                            "schema": {
+                                                "$ref": "#/definitions/DeviceStatusChangeEvent"
+                                            }
+                                        }
+                                    },
+                                    "description": "",
+                                    "required": true
+                                },
+                                "responses": {
+                                    "201": {
+                                        "description": ""
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "device_tcp": {
+                        "": {
+                            "post": {
+                                "requestBody": {
+                                    "content": {
+                                        "application/json": {
+                                            "schema": {
+                                                "$ref": "#/definitions/DeviceTCPEvent"
+                                            }
+                                        }
+                                    },
+                                    "description": "",
+                                    "required": true
+                                },
+                                "responses": {
+                                    "201": {
+                                        "description": ""
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "operationId": "bindAlertProfileToDevice",
+                "parameters": [
+                    {
+                        "description": "Agent ID",
+                        "format": "int32",
+                        "in": "path",
+                        "name": "agent_id",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "description": "Profile ID",
+                        "format": "int32",
+                        "in": "path",
+                        "name": "alert_profile_id",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "description": "Device ID",
+                        "format": "int32",
+                        "in": "path",
+                        "name": "device_id",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    }
+                },
+                "summary": "Bind an alert profile to a device. After binding, a webhook will be sent to the configured service when one of the events associated to the profile occurs. You can configure the profile and the webhook endpoint on the Domotz Portal",
                 "tags": [
                     "alert profiles"
                 ]
@@ -2826,6 +6358,133 @@
                 ]
             }
         },
+        "/inventory": {
+            "delete": {
+                "operationId": "deleteInventory",
+                "parameters": [],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    }
+                },
+                "summary": "Clears the inventory",
+                "tags": [
+                    "inventory"
+                ]
+            },
+            "get": {
+                "operationId": "getInventory",
+                "parameters": [],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The inventory fields, sorted by creation time",
+                        "schema": {
+                            "items": {
+                                "$ref": "#/definitions/InventoryField"
+                            },
+                            "type": "array"
+                        }
+                    }
+                },
+                "summary": "Enumerates all the Inventory fields",
+                "tags": [
+                    "inventory"
+                ]
+            }
+        },
+        "/inventory/{inventory_field}": {
+            "delete": {
+                "operationId": "deleteInventoryField",
+                "parameters": [
+                    {
+                        "description": "Field identifier, unique within the Inventory",
+                        "in": "path",
+                        "name": "inventory_field",
+                        "pattern": "^[a-z][a-z0-9_-]{0,24}$",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    }
+                },
+                "summary": "Deletes the Inventory Field",
+                "tags": [
+                    "inventory"
+                ]
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "operationId": "createInventoryField",
+                "parameters": [
+                    {
+                        "description": "Field identifier, unique within the Inventory",
+                        "in": "path",
+                        "name": "inventory_field",
+                        "pattern": "^[a-z][a-z0-9_-]{0,24}$",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/WriteInventoryField"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "The inventory field will be referenced to with its name"
+                    }
+                },
+                "summary": "Creates a new Inventory Field - the user will be able to set key-values pairs on every device",
+                "tags": [
+                    "inventory"
+                ]
+            },
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "operationId": "updateInventoryField",
+                "parameters": [
+                    {
+                        "description": "Field identifier, unique within the Inventory",
+                        "in": "path",
+                        "name": "inventory_field",
+                        "pattern": "^[a-z][a-z0-9_-]{0,24}$",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/WriteInventoryField"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    }
+                },
+                "summary": "Updates the Inventory Field",
+                "tags": [
+                    "inventory"
+                ]
+            }
+        },
         "/meta/usage": {
             "get": {
                 "operationId": "apiUsageInfo",
@@ -2918,7 +6577,7 @@
         },
         "/user/{user_id}/alert-profile": {
             "get": {
-                "operationId": "getAlertProfiles",
+                "operationId": "getAlertProfiles _Deprecated_ (please use getAlertProfiles2)",
                 "parameters": [
                     {
                         "description": "User ID",
@@ -2960,7 +6619,7 @@
     ],
     "securityDefinitions": {
         "api_key": {
-            "description": "Get you API Key from the Domotz Portal or contact us",
+            "description": "Get you API Key from the <a href=\"https://portal.domotz.com/portal/settings/services?selected_menu=api_keys\">Domotz Portal</a> or contact us",
             "in": "header",
             "name": "X-Api-Key",
             "type": "apiKey"
