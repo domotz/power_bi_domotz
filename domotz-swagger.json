@@ -3260,7 +3260,6 @@
                     },
                     {
                         "description": "The start time of the time series. Default value is one week",
-                        "format": "date-time",
                         "in": "query",
                         "name": "from",
                         "required": false,
@@ -3268,7 +3267,6 @@
                     },
                     {
                         "description": "The end time of the time series. Default value is now",
-                        "format": "date-time",
                         "in": "query",
                         "name": "to",
                         "required": false,
