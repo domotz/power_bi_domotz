@@ -2296,9 +2296,6 @@
                                 "dhcp": {
                                     "type": "string"
                                 },
-                                "host": {
-                                    "type": "string"
-                                },
                                 "inspection": {
                                     "type": "string"
                                 },
