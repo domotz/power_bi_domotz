@@ -2964,7 +2964,6 @@
             "type": "object"
         }
     },
-    "host": "api-eu-west-1-cell-1.domotz.com",
     "info": {
         "contact": {
             "email": "support@domotz.com",
