@@ -2290,9 +2290,7 @@
                     "200": {
                         "description": "The list of all devices in the Agent's monitored networks",
                         "schema": {
-                            "items": {
-                                "$ref": "#/definitions/AbstractDevice"
-                            },
+                            "items": {},
                             "type": "array"
                         }
                     }
@@ -2429,11 +2427,7 @@
                 "responses": {
                     "200": {
                         "description": "An object containing the device details",
-                        "schema": {
-                            "items": {
-                                "$ref": "#/definitions/AbstractDevice"
-                            }
-                        }
+                        "schema": {}
                     }
                 },
                 "summary": "Returns the details of a device",
