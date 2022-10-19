@@ -2112,6 +2112,30 @@
                 }
             ]
         },
+        "ExternalIpDevice": {
+            "allOf": [
+                {
+                    "$ref": "#/definitions/IpDevice"
+                },
+                {
+                    "description": "A device added by the means of 'Advanced Monitoring': it is an IP device manually added by \nthe user, no discoveries are done over it, just periodical ping to see whether it is reachable",
+                    "properties": {
+                        "names": {
+                            "properties": {
+                                "host": {
+                                    "type": "string"
+                                },
+                                "inspection": {
+                                    "type": "string"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    },
+                    "type": "object"
+                }
+            ]
+        },
         "FeatureDiscoveryEvent": {
             "description": "Triggered when a new feature is discovered on a device",
             "properties": {
@@ -2742,6 +2766,39 @@
                 "operands"
             ],
             "type": "object"
+        },
+        "SubnetIpDevice": {
+            "allOf": [
+                {
+                    "$ref": "#/definitions/IpDevice"
+                },
+                {
+                    "description": "A device automatically discovered by the agent that exists in an IP subnet defined by the user.\n The agent reaches the device through a Level 3 switch or similar device, so it cannot get the MAC address or other \nlevel 2 information, such as DHCP lease data    \n    ",
+                    "properties": {
+                        "names": {
+                            "properties": {
+                                "bonjour": {
+                                    "type": "string"
+                                },
+                                "host": {
+                                    "type": "string"
+                                },
+                                "inspection": {
+                                    "type": "string"
+                                },
+                                "snmp": {
+                                    "type": "string"
+                                },
+                                "upnp": {
+                                    "type": "string"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    },
+                    "type": "object"
+                }
+            ]
         },
         "TCPDomotzEye": {
             "description": "Information about a configured TCP Domotz Sensor",
