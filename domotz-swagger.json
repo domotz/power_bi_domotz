@@ -1461,35 +1461,6 @@
             },
             "type": "object"
         },
-        "NetworkTopology": {
-            "properties": {
-                "edges": {
-                    "description": "The list of edges. Each item contains the IDs of the connected devices.",
-                    "items": {
-                        "properties": {
-                            "from": {
-                                "format": "int32",
-                                "type": "integer"
-                            },
-                            "to": {
-                                "format": "int32",
-                                "type": "integer"
-                            }
-                        },
-                        "required": [
-                            "from",
-                            "to"
-                        ],
-                        "type": "object"
-                    },
-                    "type": "array"
-                }
-            },
-            "required": [
-                "edges"
-            ],
-            "type": "object"
-        },
         "SNMPDomotzAgentEye": {
             "description": "Information about a configured SNMP Domotz Sensor",
             "properties": {
@@ -3409,36 +3380,6 @@
                 "summary": "Returns the time series of the Internet Speed measurements taken from the agent, both in \ndownload and in upload.",
                 "tags": [
                     "metrics"
-                ]
-            }
-        },
-        "/agent/{agent_id}/network-topology": {
-            "get": {
-                "operationId": "getNetworkTopology",
-                "parameters": [
-                    {
-                        "description": "Agent ID",
-                        "format": "int32",
-                        "in": "path",
-                        "name": "agent_id",
-                        "required": true,
-                        "type": "integer"
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "schema": {
-                            "$ref": "#/definitions/NetworkTopology"
-                        }
-                    }
-                },
-                "summary": "Returns the agent's network topology",
-                "tags": [
-                    "topology"
                 ]
             }
         },
