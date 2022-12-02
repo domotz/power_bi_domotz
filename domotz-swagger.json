@@ -198,6 +198,100 @@
                         }
                     },
                     "type": "object"
+                },
+                "agent_reachable": {
+                    "description": "When `true` the device is reachable by the agent over an IP network.\nWhen `false` Domotz knows about the status of the device by the means of another source e.g. a third party controller.\n\nThis field is significant only when the status of the device is `ONLINE` and its value is `false` because it means\nthat even if the IP device is up and running, many features aren't allowed, such as the direct connection or the TCP\nservices monitoring.",
+                    "type": "boolean"
+                },
+                "grace_period": {
+                    "description": "The number of seconds a device must be unreachable before being declared DOWN",
+                    "format": "int32",
+                    "type": "integer"
+                },
+                "ip_addresses": {
+                    "items": {
+                        "pattern": "^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$",
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "last_status_change": {
+                    "format": "date-time",
+                    "type": "string"
+                },
+                "model": {
+                    "maxLength": 255,
+                    "type": "string"
+                },
+                "open_ports": {
+                    "description": "The list of TCP and UDP open ports. Domotz scans a subset of all the ports, visit the <a href='https://help.domotz.com/user-guide/device-tcp-udp-ports-services-discovery/'>user guide</a> for more details.",
+                    "properties": {
+                        "tcp": {
+                            "items": {
+                                "format": "int32",
+                                "type": "integer"
+                            },
+                            "type": "array"
+                        },
+                        "udp": {
+                            "items": {
+                                "format": "int32",
+                                "type": "integer"
+                            },
+                            "type": "array"
+                        }
+                    },
+                    "type": "object"
+                },
+                "status": {
+                    "enum": [
+                        "ONLINE",
+                        "OFFLINE",
+                        "DOWN",
+                        "HIDDEN"
+                    ],
+                    "type": "string"
+                },
+                "vendor": {
+                    "maxLength": 100,
+                    "type": "string"
+                },
+                "hw_address": {
+                    "description": "MAC Address",
+                    "type": "string"
+                },
+                "is_jammed": {
+                    "description": "When true, the Domotz Agent is blocking the device to access the Internet. The device can still reach every other device in the local network",
+                    "type": "boolean"
+                },
+                "names": {
+                    "properties": {
+                        "bonjour": {
+                            "type": "string"
+                        },
+                        "dhcp": {
+                            "type": "string"
+                        },
+                        "host": {
+                            "type": "string"
+                        },
+                        "inspection": {
+                            "type": "string"
+                        },
+                        "netbios": {
+                            "type": "string"
+                        },
+                        "snmp": {
+                            "type": "string"
+                        },
+                        "upnp": {
+                            "type": "string"
+                        },
+                        "zeroconf": {
+                            "type": "string"
+                        }
+                    },
+                    "type": "object"
                 }
             },
             "required": [
@@ -1254,42 +1348,6 @@
             },
             "type": "object"
         },
-        "DummyDevice": {
-            "allOf": [
-                {
-                    "$ref": "#/definitions/AbstractDevice"
-                },
-                {
-                    "description": "A device that has no network access whatsoever and cannot be discovered or interacted with by\n     the agent.\n \n A user can create a Dummy Device to attach it to a power outlet so that it is easier to remember which port controls\nthe device",
-                    "properties": {},
-                    "type": "object"
-                }
-            ]
-        },
-        "ExternalIpDevice": {
-            "allOf": [
-                {
-                    "$ref": "#/definitions/IpDevice"
-                },
-                {
-                    "description": "A device added by the means of 'Advanced Monitoring': it is an IP device manually added by \nthe user, no discoveries are done over it, just periodical ping to see whether it is reachable",
-                    "properties": {
-                        "names": {
-                            "properties": {
-                                "host": {
-                                    "type": "string"
-                                },
-                                "inspection": {
-                                    "type": "string"
-                                }
-                            },
-                            "type": "object"
-                        }
-                    },
-                    "type": "object"
-                }
-            ]
-        },
         "InventoryField": {
             "allOf": [
                 {
@@ -1318,126 +1376,6 @@
                     "required": [
                         "key"
                     ],
-                    "type": "object"
-                }
-            ]
-        },
-        "IpDevice": {
-            "allOf": [
-                {
-                    "$ref": "#/definitions/AbstractDevice"
-                },
-                {
-                    "description": "Base abstract class for all IP devices",
-                    "properties": {
-                        "agent_reachable": {
-                            "description": "When `true` the device is reachable by the agent over an IP network.\nWhen `false` Domotz knows about the status of the device by the means of another source e.g. a third party controller.\n\nThis field is significant only when the status of the device is `ONLINE` and its value is `false` because it means\nthat even if the IP device is up and running, many features aren't allowed, such as the direct connection or the TCP\nservices monitoring.",
-                            "type": "boolean"
-                        },
-                        "grace_period": {
-                            "description": "The number of seconds a device must be unreachable before being declared DOWN",
-                            "format": "int32",
-                            "type": "integer"
-                        },
-                        "ip_addresses": {
-                            "items": {
-                                "pattern": "^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$",
-                                "type": "string"
-                            },
-                            "type": "array"
-                        },
-                        "last_status_change": {
-                            "format": "date-time",
-                            "type": "string"
-                        },
-                        "model": {
-                            "maxLength": 255,
-                            "type": "string"
-                        },
-                        "open_ports": {
-                            "description": "The list of TCP and UDP open ports. Domotz scans a subset of all the ports, visit the <a href='https://help.domotz.com/user-guide/device-tcp-udp-ports-services-discovery/'>user guide</a> for more details.",
-                            "properties": {
-                                "tcp": {
-                                    "items": {
-                                        "format": "int32",
-                                        "type": "integer"
-                                    },
-                                    "type": "array"
-                                },
-                                "udp": {
-                                    "items": {
-                                        "format": "int32",
-                                        "type": "integer"
-                                    },
-                                    "type": "array"
-                                }
-                            },
-                            "type": "object"
-                        },
-                        "status": {
-                            "enum": [
-                                "ONLINE",
-                                "OFFLINE",
-                                "DOWN",
-                                "HIDDEN"
-                            ],
-                            "type": "string"
-                        },
-                        "vendor": {
-                            "maxLength": 100,
-                            "type": "string"
-                        }
-                    },
-                    "type": "object"
-                }
-            ]
-        },
-        "LocalIpDevice": {
-            "allOf": [
-                {
-                    "$ref": "#/definitions/IpDevice"
-                },
-                {
-                    "description": "Standard device, automatically discovered in the local IP network of the agent.",
-                    "properties": {
-                        "hw_address": {
-                            "description": "MAC Address",
-                            "type": "string"
-                        },
-                        "is_jammed": {
-                            "description": "When true, the Domotz Agent is blocking the device to access the Internet. The device can still reach every other device in the local network",
-                            "type": "boolean"
-                        },
-                        "names": {
-                            "properties": {
-                                "bonjour": {
-                                    "type": "string"
-                                },
-                                "dhcp": {
-                                    "type": "string"
-                                },
-                                "host": {
-                                    "type": "string"
-                                },
-                                "inspection": {
-                                    "type": "string"
-                                },
-                                "netbios": {
-                                    "type": "string"
-                                },
-                                "snmp": {
-                                    "type": "string"
-                                },
-                                "upnp": {
-                                    "type": "string"
-                                },
-                                "zeroconf": {
-                                    "type": "string"
-                                }
-                            },
-                            "type": "object"
-                        }
-                    },
                     "type": "object"
                 }
             ]
@@ -1792,39 +1730,6 @@
                 "operands"
             ],
             "type": "object"
-        },
-        "SubnetIpDevice": {
-            "allOf": [
-                {
-                    "$ref": "#/definitions/IpDevice"
-                },
-                {
-                    "description": "A device automatically discovered by the agent that exists in an IP subnet defined by the user.\n The agent reaches the device through a Level 3 switch or similar device, so it cannot get the MAC address or other \nlevel 2 information, such as DHCP lease data    \n    ",
-                    "properties": {
-                        "names": {
-                            "properties": {
-                                "bonjour": {
-                                    "type": "string"
-                                },
-                                "host": {
-                                    "type": "string"
-                                },
-                                "inspection": {
-                                    "type": "string"
-                                },
-                                "snmp": {
-                                    "type": "string"
-                                },
-                                "upnp": {
-                                    "type": "string"
-                                }
-                            },
-                            "type": "object"
-                        }
-                    },
-                    "type": "object"
-                }
-            ]
         },
         "TCPDomotzEye": {
             "description": "Information about a configured TCP Domotz Sensor",
