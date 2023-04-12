@@ -906,7 +906,7 @@
             },
             "type": "object"
         },
-        "DeviceApplicationField": {
+        "DeviceApplication": {
             "description": "The list of applications of a device",
             "properties": {
                 "application_id": {
@@ -942,6 +942,55 @@
                 },
                 "version": {
                     "type": "string"
+                }
+            },
+            "required": [
+                "application_id",
+                "first_time_seen"
+            ],
+            "type": "object"
+        },
+        "AgentDeviceApplication": {
+            "description": "The list of applications of a device",
+            "properties": {
+                "application_id": {
+                    "type": "string"
+                },
+                "first_time_seen": {
+                    "format": "date-time",
+                    "type": "string"
+                },
+                "info": {
+                    "type": "string"
+                },
+                "install_date": {
+                    "format": "date-time",
+                    "type": "string"
+                },
+                "install_location": {
+                    "type": "string"
+                },
+                "last_modified": {
+                    "format": "date-time",
+                    "type": "string"
+                },
+                "last_update": {
+                    "format": "date-time",
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "publisher": {
+                    "type": "string"
+                },
+                "version": {
+                    "type": "string"
+                },
+                "device_id": {
+                    "type": "integer",
+                    "format": "int32",
+                    "description": "The ID of the device"
                 }
             },
             "required": [
@@ -2479,6 +2528,20 @@
                         "name": "page_number",
                         "required": false,
                         "type": "integer"
+                    },
+                    {
+                        "description": "Allows filtering by `name`",
+                        "in": "query",
+                        "name": "name",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "description": "Allows filtering by `device_ids`",
+                        "in": "query",
+                        "name": "device_ids",
+                        "required": false,
+                        "type": "string"
                     }
                 ],
                 "produces": [
@@ -2489,7 +2552,7 @@
                         "description": "The list of applications of the device",
                         "schema": {
                             "items": {
-                                "$ref": "#/definitions/DeviceApplicationField"
+                                "$ref": "#/definitions/DeviceApplication"
                             },
                             "type": "array"
                         }
@@ -2518,6 +2581,131 @@
                         "name": "device_id",
                         "required": true,
                         "type": "integer"
+                    },
+                    {
+                        "description": "Allows filtering by `name`",
+                        "in": "query",
+                        "name": "name",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "description": "Allows filtering by `device_ids`",
+                        "in": "query",
+                        "name": "device_ids",
+                        "required": false,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Returns the application count",
+                        "headers": {
+                            "X-Entities-Count": {
+                                "description": "Returns the application count",
+                                "format": "int32",
+                                "type": "integer"
+                            }
+                        }
+                    }
+                },
+                "summary": "Counts the applications",
+                "tags": [
+                    "device"
+                ]
+            }
+        },
+        "/agent/{agent_id}/device/application": {
+            "get": {
+                "operationId": "listAgentDeviceApplications",
+                "parameters": [
+                    {
+                        "description": "Agent ID",
+                        "format": "int32",
+                        "in": "path",
+                        "name": "agent_id",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "default": 100,
+                        "description": "The maximum number of items to return. Min value is 1. Max value is 1000. Default value is 100",
+                        "format": "int32",
+                        "in": "query",
+                        "maximum": 1000,
+                        "minimum": 1,
+                        "name": "page_size",
+                        "required": false,
+                        "type": "integer"
+                    },
+                    {
+                        "default": 0,
+                        "description": "The requested page number, 0-indexed. Default value is 0",
+                        "format": "int32",
+                        "in": "query",
+                        "minimum": 0,
+                        "name": "page_number",
+                        "required": false,
+                        "type": "integer"
+                    },
+                    {
+                        "description": "Allows filtering by `name`",
+                        "in": "query",
+                        "name": "name",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "description": "Allows filtering by `device_ids`",
+                        "in": "query",
+                        "name": "device_ids",
+                        "required": false,
+                        "type": "string"
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The list of applications of the device",
+                        "schema": {
+                            "items": {
+                                "$ref": "#/definitions/DeviceApplication"
+                            },
+                            "type": "array"
+                        }
+                    }
+                },
+                "summary": "Retrieves the list of applications of the device. The feature is only available on agents having the Booster Pack",
+                "tags": [
+                    "device"
+                ]
+            },
+            "head": {
+                "operationId": "countAgentDeviceApplications",
+                "parameters": [
+                    {
+                        "description": "Agent ID",
+                        "format": "int32",
+                        "in": "path",
+                        "name": "agent_id",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "description": "Allows filtering by `name`",
+                        "in": "query",
+                        "name": "name",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "description": "Allows filtering by `device_ids`",
+                        "in": "query",
+                        "name": "device_ids",
+                        "required": false,
+                        "type": "string"
                     }
                 ],
                 "responses": {
