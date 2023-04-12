@@ -1296,6 +1296,10 @@
                     "description": "The variable path",
                     "type": "string"
                 },
+                "metric": {
+                    "description": "The metric",
+                    "type": "string"
+                },
                 "unit": {
                     "description": "The unit of measurement",
                     "type": "string"
@@ -1308,6 +1312,61 @@
                     "description": "The update time of the variable value",
                     "format": "date-time",
                     "type": "string"
+                }
+            },
+            "required": [
+                "has_history",
+                "id",
+                "path"
+            ],
+            "type": "object"
+        },
+        "AgentDeviceVariable": {
+            "description": "The representation of a device variable",
+            "properties": {
+                "creation_time": {
+                    "description": "The creation time of the variable",
+                    "format": "date-time",
+                    "type": "string"
+                },
+                "has_history": {
+                    "description": "If true the history of the variable can be retrieved with <a href='#getvariablehistory'> getVariableHistory</a>",
+                    "type": "boolean"
+                },
+                "id": {
+                    "description": "The ID of the variable",
+                    "format": "int32",
+                    "type": "integer"
+                },
+                "label": {
+                    "description": "The label",
+                    "type": "string"
+                },
+                "path": {
+                    "description": "The variable path",
+                    "type": "string"
+                },
+                "metric": {
+                    "description": "The metric",
+                    "type": "string"
+                },
+                "unit": {
+                    "description": "The unit of measurement",
+                    "type": "string"
+                },
+                "value": {
+                    "description": "The variable value",
+                    "type": "string"
+                },
+                "value_update_time": {
+                    "description": "The update time of the variable value",
+                    "format": "date-time",
+                    "type": "string"
+                },
+                "device_id": {
+                    "type": "integer",
+                    "format": "int32",
+                    "description": "The ID of the device"
                 }
             },
             "required": [
@@ -3019,6 +3078,13 @@
                         "type": "string"
                     },
                     {
+                        "description": "Allows filtering by `metric`",
+                        "in": "query",
+                        "name": "metric",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
                         "description": "Allows ordering by `path`, `id`, `value`, `label`, `value_update_time`, `creation_time`",
                         "enum": [
                             "path",
@@ -3087,6 +3153,171 @@
                         "format": "int32",
                         "in": "path",
                         "name": "device_id",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "description": "Allows filtering by `value`",
+                        "in": "query",
+                        "name": "value",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "description": "Allows filtering by `path`",
+                        "in": "query",
+                        "name": "path",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "description": "Allows filtering by `metric`",
+                        "in": "query",
+                        "name": "metric",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "description": "Allows filtering by `has_history` field",
+                        "in": "query",
+                        "name": "has_history",
+                        "required": false,
+                        "type": "boolean"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "The device variables count",
+                        "headers": {
+                            "X-Entities-Count": {
+                                "description": "The device variables count",
+                                "format": "int32",
+                                "type": "integer"
+                            }
+                        }
+                    }
+                },
+                "summary": "Returns device variables count",
+                "tags": [
+                    "variables"
+                ]
+            }
+        },
+        "/agent/{agent_id}/device/variable": {
+            "get": {
+                "operationId": "listAgentDeviceVariables",
+                "parameters": [
+                    {
+                        "description": "Agent ID",
+                        "format": "int32",
+                        "in": "path",
+                        "name": "agent_id",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "default": 100,
+                        "description": "The maximum number of items to return. Min value is 1. Max value is 1000. Default value is 100",
+                        "format": "int32",
+                        "in": "query",
+                        "maximum": 1000,
+                        "minimum": 1,
+                        "name": "page_size",
+                        "required": false,
+                        "type": "integer"
+                    },
+                    {
+                        "default": 0,
+                        "description": "The requested page number, 0-indexed. Default value is 0",
+                        "format": "int32",
+                        "in": "query",
+                        "minimum": 0,
+                        "name": "page_number",
+                        "required": false,
+                        "type": "integer"
+                    },
+                    {
+                        "description": "Allows filtering by `value`",
+                        "in": "query",
+                        "name": "value",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "description": "Allows filtering by `path`",
+                        "in": "query",
+                        "name": "path",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "description": "Allows filtering by `metric`",
+                        "in": "query",
+                        "name": "metric",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "description": "Allows ordering by `path`, `id`, `value`, `label`, `value_update_time`, `creation_time`",
+                        "enum": [
+                            "path",
+                            "id",
+                            "value",
+                            "label",
+                            "value_update_time",
+                            "creation_time"
+                        ],
+                        "in": "query",
+                        "name": "sort_by",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "description": "The default is `asc`",
+                        "enum": [
+                            "asc",
+                            "desc"
+                        ],
+                        "in": "query",
+                        "name": "sorting_direction",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "description": "Allows filtering by `has_history` field",
+                        "in": "query",
+                        "name": "has_history",
+                        "required": false,
+                        "type": "boolean"
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The list of device variables",
+                        "schema": {
+                            "items": {
+                                "$ref": "#/definitions/AgentDeviceVariable"
+                            },
+                            "type": "array"
+                        }
+                    }
+                },
+                "summary": "Retrieves the list of device variables",
+                "tags": [
+                    "variables"
+                ]
+            },
+            "head": {
+                "operationId": "countAgentDeviceVariables",
+                "parameters": [
+                    {
+                        "description": "Agent ID",
+                        "format": "int32",
+                        "in": "path",
+                        "name": "agent_id",
                         "required": true,
                         "type": "integer"
                     },
