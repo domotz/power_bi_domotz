@@ -2671,7 +2671,7 @@
                         "description": "The list of applications of the device",
                         "schema": {
                             "items": {
-                                "$ref": "#/definitions/DeviceApplication"
+                                "$ref": "#/definitions/AgentDeviceApplication"
                             },
                             "type": "array"
                         }
