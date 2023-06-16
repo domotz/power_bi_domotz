@@ -31,7 +31,7 @@ domotz = [
 
 // Data Source UI publishing description
 domotz.Publish = [
-    Beta = true,
+    Beta = false,
     Category = "Other",
     ButtonText = { Extension.LoadString("ButtonTitle"), Extension.LoadString("ButtonHelp") },
     LearnMoreUrl = "https://github.com/domotz/power_bi_domotz",
